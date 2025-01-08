@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,4 +37,16 @@ fun App() {
             }
         }
     }
+}
+
+
+@Composable
+fun TopAppBarMain() {
+    TopAppBar(
+        title = { Text("Biometric Authentication") },
+        colors = TopAppBarDefaults.topAppBarColors(
+            titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    )
 }
