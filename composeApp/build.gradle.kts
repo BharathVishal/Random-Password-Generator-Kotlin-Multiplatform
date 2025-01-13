@@ -1,3 +1,4 @@
+import org.jetbrains.compose.ExperimentalComposeLibrary
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -68,6 +69,9 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(compose.material3)
+            @OptIn(ExperimentalComposeLibrary::class)
+            implementation(compose.components.resources)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -105,6 +109,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.material3.android)
+    debugImplementation(compose.uiTooling)
     debugImplementation(compose.uiTooling)
 }
 
