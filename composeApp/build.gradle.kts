@@ -59,6 +59,8 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.google.accompanist.accompanist)
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -109,6 +111,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.material)
     debugImplementation(compose.uiTooling)
     debugImplementation(compose.uiTooling)
 }

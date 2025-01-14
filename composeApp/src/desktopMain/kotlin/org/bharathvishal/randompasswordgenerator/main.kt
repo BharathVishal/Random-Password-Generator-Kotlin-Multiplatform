@@ -7,7 +7,7 @@ import androidx.compose.ui.window.application
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
-        title = "Random Password Generator",
+        title = "Random Password Generator - KMM",
     ) {
         App(
             darkTheme = isSystemInDarkTheme(),

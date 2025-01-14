@@ -11,38 +11,61 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
+@Suppress("IMPLICIT_CAST_TO_ANY")
 @Composable
 actual fun AppTheme(
     darkTheme: Boolean,
     dynamicColor: Boolean,
     content: @Composable () -> Unit
 ) {
+    val systemUiController = rememberSystemUiController()
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+            if (darkTheme) {
+                systemUiController.setStatusBarColor(
+                    color = DarkColorScheme.surface,
+                    darkIcons = false
+                )
+                dynamicDarkColorScheme(context)
+            } else {
+                systemUiController.setStatusBarColor(
+                    color = LightColorScheme.surface,
+                    darkIcons = true
+                )
+                dynamicLightColorScheme(context)
+            }
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> {
+            systemUiController.setStatusBarColor(color = DarkColorScheme.surface, darkIcons = false)
+            DarkColorScheme
+        }
+
+        else -> {
+            systemUiController.setStatusBarColor(
+                color = LightColorScheme.surface,
+                darkIcons = true
+            )
+            LightColorScheme
+        }
     }
 
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(
-                window,
-                view
-            ).isAppearanceLightStatusBars = darkTheme
+            //val window = (view.context as Activity).window
+            //window.statusBarColor = colorScheme.surfaceContainer.toArgb()
+            //WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
+        shapes = Shapes
     )
 }

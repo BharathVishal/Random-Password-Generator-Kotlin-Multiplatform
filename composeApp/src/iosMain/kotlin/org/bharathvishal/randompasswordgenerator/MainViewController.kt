@@ -1,8 +1,10 @@
 package org.bharathvishal.randompasswordgenerator
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.window.ComposeUIViewController
 import platform.UIKit.UIScreen
 import platform.UIKit.UIUserInterfaceStyle
+
 
 fun MainViewController() = ComposeUIViewController {
     val isDarkTheme =

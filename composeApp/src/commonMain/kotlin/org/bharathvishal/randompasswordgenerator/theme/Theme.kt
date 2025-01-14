@@ -1,6 +1,7 @@
 package com.bharathvishal.biometricauthentication.theme
 
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -65,6 +66,8 @@ val DarkColorScheme = darkColorScheme(
     inversePrimary = md_theme_dark_inversePrimary,
     surfaceTint = md_theme_dark_surfaceTint,
 )
+
+
 
 
 @Composable
