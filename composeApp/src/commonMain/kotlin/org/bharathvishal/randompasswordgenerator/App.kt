@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bharathvishal.biometricauthentication.theme.AppTheme
+import org.bharathvishal.randompasswordgenerator.Constants.Constants
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import randompasswordgenerator.composeapp.generated.resources.Res
@@ -53,6 +54,11 @@ import randompasswordgenerator.composeapp.generated.resources.baseline_password_
 
 private var showSnackBarVal = mutableStateOf(false)
 private var snackBarMessageVal = mutableStateOf("-")
+private var passwordTextVal = mutableStateOf("ABCDEFGHIJK")
+val mCheckedStateCapitalLetters = mutableStateOf(false)
+val mCheckedStateSmallLetters = mutableStateOf(false)
+val mCheckedStateNumbers = mutableStateOf(false)
+val mCheckedStateSymbol = mutableStateOf(false)
 
 @Composable
 @Preview
@@ -137,12 +143,12 @@ fun CardViewMain() {
                 ImageLogo()
                 TextHeader()
                 Divider(thickness = 0.5.dp)
-                RowComponentPasswordLabel()
+                RowComponentPasswordLabel(passwordTextVal.value)
                 RowComponentButtons()
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSlider("Password Length")
                 Divider(thickness = 0.5.dp)
-                RowComponentInCardSwitch("Include capital letters (A ,B, C)")
+                RowComponentInCardSwitch(Constants.INCLUDE_CAPITAL_LETTERS)
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSwitch("Include small letters (a ,b, c)")
                 Spacer(modifier = Modifier.padding(top = 6.dp))
@@ -225,6 +231,8 @@ fun RowComponentInCardSlider(strDesc: String) {
 fun RowComponentInCardSwitch(strDesc: String) {
     val mCheckedState = remember { mutableStateOf(false) }
 
+    if(strDesc.)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -285,7 +293,7 @@ fun RowComponentButtons() {
 
 
 @Composable
-fun RowComponentPasswordLabel() {
+fun RowComponentPasswordLabel(strPass: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -293,7 +301,7 @@ fun RowComponentPasswordLabel() {
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "Password",
+            text = strPass,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
