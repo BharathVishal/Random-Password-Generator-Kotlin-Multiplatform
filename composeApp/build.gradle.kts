@@ -32,7 +32,7 @@ kotlin {
     }
     
     jvm("desktop")
-    
+
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
         moduleName = "composeApp"
@@ -52,7 +52,7 @@ kotlin {
         }
         binaries.executable()
     }
-    
+
     sourceSets {
         val desktopMain by getting
         

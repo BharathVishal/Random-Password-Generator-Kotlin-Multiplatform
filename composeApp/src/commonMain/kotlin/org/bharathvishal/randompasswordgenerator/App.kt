@@ -6,6 +6,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,15 +15,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
@@ -39,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.bharathvishal.biometricauthentication.theme.AppTheme
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -131,6 +137,7 @@ fun CardViewMain() {
                 ImageLogo()
                 TextHeader()
                 Divider(thickness = 0.5.dp)
+                RowComponentPasswordLabel()
                 RowComponentButtons()
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSlider("Password Length")
@@ -240,24 +247,59 @@ fun RowComponentInCardSwitch(strDesc: String) {
 
 @Composable
 fun RowComponentButtons() {
-    val mCheckedState = remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        OutlinedButton(
+            modifier = Modifier.weight(1F),
+            onClick = { },
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                top = 12.dp,
+                end = 20.dp,
+                bottom = 12.dp
+            ),
+        ) {
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = "Generate Password")
+        }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        OutlinedButton(
+            modifier = Modifier.weight(1F),
+            onClick = { },
+            contentPadding = PaddingValues(
+                start = 20.dp,
+                top = 12.dp,
+                end = 20.dp,
+                bottom = 12.dp
+            ),
+        ) {
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = "Copy Password")
+        }
+    }
+}
+
+
+@Composable
+fun RowComponentPasswordLabel() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = "Generate Password",
+            text = "Password",
+            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(5.dp)
-                .fillMaxWidth(),
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 39.sp,
             color = MaterialTheme.colorScheme.primary
         )
-
-        Switch(checked = mCheckedState.value,
-            onCheckedChange = { mCheckedState.value = it })
     }
 }
 
