@@ -2,6 +2,10 @@ package org.bharathvishal.randompasswordgenerator
 
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +17,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
@@ -53,7 +58,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bharathvishal.biometricauthentication.theme.AppTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.bharathvishal.randompasswordgenerator.Constants.Constants
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -89,12 +98,7 @@ fun App(
 //Adds scroll view to compos
 @Composable
 fun MainViewImplementation() {
-    val snackbarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
-
-    Scaffold(topBar = { TopAppBarMain() },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) {
+    Scaffold(topBar = { TopAppBarMain() }) {
         Column(
         ) {
             Box(
@@ -103,14 +107,10 @@ fun MainViewImplementation() {
                 CardViewMain()
                 Box(
                     modifier = Modifier.fillMaxWidth().wrapContentHeight()
+                        .offset(y = (-50).dp)
                         .align(Alignment.BottomStart)
                 ) {
-                    scope.launch {
-                        snackbarHostState.showSnackbar(
-                            "Snackbar Test"
-                        )
-                    }
-                    //SnackBarViewComposable(showSnackBarVal.value, snackBarMessageVal.value)
+                    SnackBarViewComposable(showSnackBarVal.value, snackBarMessageVal.value)
                 }
             }
         }
@@ -190,10 +190,12 @@ fun TextHeader() {
 
 @Composable
 fun SnackBarViewComposable(visibilityState: Boolean, message: String) {
-    AnimatedVisibility(visible = visibilityState) {
-        Snackbar(
-            action = {}
-        ) {
+    AnimatedVisibility(
+        visible = visibilityState,
+        enter = fadeIn(animationSpec = tween(500)),
+        exit = fadeOut(animationSpec = tween(250))
+    ) {
+        Snackbar(action = {}) {
             Text(text = message)
         }
     }
@@ -265,8 +267,17 @@ fun RowComponentButtons() {
         OutlinedButton(
             modifier = Modifier.weight(1F),
             onClick = {
-                showSnackBarVal.value = true
-                snackBarMessageVal.value = "Generated Random password"
+                CoroutineScope(Dispatchers.Default).launch {
+                    // Simulate snackbarshow data
+                    showSnackBarVal.value = true
+                    snackBarMessageVal.value = "Generated Random password"
+                    delay(2500)
+                    // Update data on the main thread
+                    withContext(Dispatchers.Main) {
+                        showSnackBarVal.value = false
+                        snackBarMessageVal.value = "-"
+                    }
+                }
             },
             contentPadding = PaddingValues(
                 start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
@@ -279,8 +290,17 @@ fun RowComponentButtons() {
         OutlinedButton(
             modifier = Modifier.weight(1F),
             onClick = {
-                showSnackBarVal.value = true
-                snackBarMessageVal.value = "Copied Password"
+                CoroutineScope(Dispatchers.Default).launch {
+                    // Simulate snackbarshow data
+                    showSnackBarVal.value = true
+                    snackBarMessageVal.value = "Copied Password"
+                    delay(2500)
+                    // Update data on the main thread
+                    withContext(Dispatchers.Main) {
+                        showSnackBarVal.value = false
+                        snackBarMessageVal.value = "-"
+                    }
+                }
             },
             contentPadding = PaddingValues(
                 start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
