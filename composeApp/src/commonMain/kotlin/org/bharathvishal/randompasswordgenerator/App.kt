@@ -72,6 +72,8 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import randompasswordgenerator.composeapp.generated.resources.Res
 import randompasswordgenerator.composeapp.generated.resources.baseline_password_24
 import randompasswordgenerator.composeapp.generated.resources.compose_multiplatform
+import randompasswordgenerator.composeapp.generated.resources.dark_mode_24dp
+import randompasswordgenerator.composeapp.generated.resources.light_mode_24dp
 
 private var showSnackBarVal = mutableStateOf(false)
 private var snackBarMessageVal = mutableStateOf("-")
@@ -207,9 +209,9 @@ fun ImageLogo() {
 @Composable
 fun ImageButtonTheme(visibility: Boolean) {
     val res: DrawableResource = if (thumbThemeSelected.value) {
-        Res.drawable.baseline_password_24
+        Res.drawable.light_mode_24dp
     } else {
-        Res.drawable.compose_multiplatform
+        Res.drawable.dark_mode_24dp
     }
 
     if (visibility) {
