@@ -1,5 +1,7 @@
 package org.bharathvishal.randompasswordgenerator.Constants
 
+import androidx.compose.ui.graphics.Color
+
 
 object Constants {
     const val PASSWORD_LENGTH = "Password Length"
@@ -7,4 +9,9 @@ object Constants {
     const val INCLUDE_SMALL_LETTERS = "Include small letters (a ,b, c)"
     const val INCLUDE_NUMBERS = "Include numbers (1 ,2, 3)"
     const val INCLUDE_SYMBOLS = "Include symbols (@ ,!, %)"
+
+    val passwordColorWeak = Color(0xFFC0392B)
+    val passwordColorMedium = Color(0xFFFFBF00)
+    val passwordColorStrong = Color(0xFF28B463)
+    val passwordColorVeryStrong = Color(0xFF3399CC)
 }

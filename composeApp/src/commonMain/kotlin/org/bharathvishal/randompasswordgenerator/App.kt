@@ -2,18 +2,18 @@ package org.bharathvishal.randompasswordgenerator
 
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.keyframes
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,8 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemGestures
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,12 +32,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -50,10 +47,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.ClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,19 +65,35 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bharathvishal.randompasswordgenerator.Constants.Constants
+import org.bharathvishal.randompasswordgenerator.Utilities.Utilities
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import randompasswordgenerator.composeapp.generated.resources.Res
 import randompasswordgenerator.composeapp.generated.resources.baseline_password_24
+import randompasswordgenerator.composeapp.generated.resources.compose_multiplatform
 
 private var showSnackBarVal = mutableStateOf(false)
 private var snackBarMessageVal = mutableStateOf("-")
 private var passwordTextVal = mutableStateOf("ABCDEFGHIJK")
-private var passwordLengthVal = mutableStateOf(9)
+private var passwordLengthVal = mutableStateOf(5)
 val mCheckedStateCapitalLetters = mutableStateOf(false)
 val mCheckedStateSmallLetters = mutableStateOf(false)
 val mCheckedStateNumbers = mutableStateOf(false)
 val mCheckedStateSymbol = mutableStateOf(false)
+private val copyToClipboard = mutableStateOf(false)
+val mPasswordStrength = mutableStateOf("Weak")
+var anotatedStringPasswordStrength: AnnotatedString? = null
+var thumbThemeSelected = mutableStateOf(false)
+var isDarkTheme = mutableStateOf(false)
+var isThemeIconVisible = mutableStateOf(false)
+
+private val capital_letters_array = arrayOfNulls<String>(26)
+private val small_letters_array = arrayOfNulls<String>(26)
+private val numbers_array = arrayOfNulls<String>(10)
+private lateinit var symbols_array: Array<String?>
+val MAX_LENGTH = 30
+val MIN_LENGTH = 5
 
 @Composable
 @Preview
@@ -84,7 +101,13 @@ fun App(
     darkTheme: Boolean, dynamicColor: Boolean
 ) {
     AppTheme(
-        darkTheme = darkTheme, dynamicColor = dynamicColor
+        darkTheme = (if (isSystemInDarkTheme()) {
+            isThemeIconVisible.value = false
+            darkTheme
+        } else {
+            isThemeIconVisible.value = true
+            isDarkTheme.value
+        }), dynamicColor = dynamicColor
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
@@ -100,9 +123,11 @@ fun App(
 fun MainViewImplementation() {
     Scaffold(topBar = { TopAppBarMain() }) {
         Column(
+            modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) {
             Box(
                 modifier = Modifier.padding(1.dp).fillMaxWidth().fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.background),
             ) {
                 CardViewMain()
                 Box(
@@ -111,6 +136,7 @@ fun MainViewImplementation() {
                         .align(Alignment.BottomStart)
                 ) {
                     SnackBarViewComposable(showSnackBarVal.value, snackBarMessageVal.value)
+                    initValues()
                 }
             }
         }
@@ -129,7 +155,6 @@ fun TopAppBarMain() {
     )
 }
 
-@Suppress("UNNECESSARY_SAFE_CALL")
 @Composable
 fun CardViewMain() {
     Column(
@@ -148,8 +173,10 @@ fun CardViewMain() {
             ) {
                 ImageLogo()
                 TextHeader()
+                ImageButtonTheme(isThemeIconVisible.value)
                 Divider(thickness = 0.5.dp)
                 RowComponentPasswordLabel(passwordTextVal.value)
+                RowComponentPasswordStrength(mPasswordStrength.value)
                 RowComponentButtons()
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSlider(Constants.PASSWORD_LENGTH)
@@ -177,13 +204,38 @@ fun ImageLogo() {
     )
 }
 
+@Composable
+fun ImageButtonTheme(visibility: Boolean) {
+    val res: DrawableResource = if (thumbThemeSelected.value) {
+        Res.drawable.baseline_password_24
+    } else {
+        Res.drawable.compose_multiplatform
+    }
+
+    if (visibility) {
+        IconButton(
+            onClick = {
+                isDarkTheme.value = !thumbThemeSelected.value
+                thumbThemeSelected.value = !thumbThemeSelected.value
+            }
+        ) {
+            Image(
+                painter = painterResource(res),
+                contentDescription = "Theme switch",
+                modifier = Modifier.requiredHeight(35.dp).requiredWidth(35.dp).padding(1.dp)
+            )
+        }
+    }
+}
+
+
 //Biometric Authentication app name Text
 @Composable
 fun TextHeader() {
     Text(
         text = "Random Password Generator",
         textAlign = TextAlign.Center,
-        modifier = Modifier.padding(5.dp).fillMaxWidth(),
+        modifier = Modifier.padding(1.dp).fillMaxWidth(),
         style = MaterialTheme.typography.headlineSmall
     )
 }
@@ -195,7 +247,7 @@ fun SnackBarViewComposable(visibilityState: Boolean, message: String) {
         enter = fadeIn(animationSpec = tween(500)),
         exit = fadeOut(animationSpec = tween(250))
     ) {
-        Snackbar(action = {}) {
+        Snackbar(action = {}, modifier = Modifier.fillMaxWidth()) {
             Text(text = message)
         }
     }
@@ -205,7 +257,8 @@ fun SnackBarViewComposable(visibilityState: Boolean, message: String) {
 //Row component composable function for Biometric related info
 @Composable
 fun RowComponentInCardSlider(strDesc: String) {
-    var sliderPosition by remember { mutableFloatStateOf(9f) }
+    var sliderPosition by remember { mutableFloatStateOf(5f) }
+    val haptic = LocalHapticFeedback.current
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
@@ -220,9 +273,16 @@ fun RowComponentInCardSlider(strDesc: String) {
 
         Slider(
             value = sliderPosition.toFloat(), onValueChange = {
+                try {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
                 sliderPosition = it.toInt().toFloat()
                 passwordLengthVal.value = it.toInt()
-            }, steps = 30, valueRange = 9f..30f
+                generateRandomPassword()
+            }, steps = 30, valueRange = 5f..30f
         )
         Text(text = sliderPosition.toInt().toString())
     }
@@ -258,7 +318,12 @@ fun RowComponentInCardSwitch(strDesc: String) {
 
 @Composable
 fun RowComponentButtons() {
-    val scope = rememberCoroutineScope()
+    var clipboardManager: ClipboardManager? = null
+    val curPlatforn = getPlatform().name
+
+    if (curPlatforn != "Web with Kotlin/Wasm") {
+        clipboardManager = LocalClipboardManager.current
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
@@ -267,17 +332,7 @@ fun RowComponentButtons() {
         OutlinedButton(
             modifier = Modifier.weight(1F),
             onClick = {
-                CoroutineScope(Dispatchers.Default).launch {
-                    // Simulate snackbarshow data
-                    showSnackBarVal.value = true
-                    snackBarMessageVal.value = "Generated Random password"
-                    delay(2500)
-                    // Update data on the main thread
-                    withContext(Dispatchers.Main) {
-                        showSnackBarVal.value = false
-                        snackBarMessageVal.value = "-"
-                    }
-                }
+                generateRandomPassword()
             },
             contentPadding = PaddingValues(
                 start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
@@ -290,17 +345,8 @@ fun RowComponentButtons() {
         OutlinedButton(
             modifier = Modifier.weight(1F),
             onClick = {
-                CoroutineScope(Dispatchers.Default).launch {
-                    // Simulate snackbarshow data
-                    showSnackBarVal.value = true
-                    snackBarMessageVal.value = "Copied Password"
-                    delay(2500)
-                    // Update data on the main thread
-                    withContext(Dispatchers.Main) {
-                        showSnackBarVal.value = false
-                        snackBarMessageVal.value = "-"
-                    }
-                }
+                copyToClipboard.value = true
+                showSnackBarCoroutine("Copied password to Clipboard.")
             },
             contentPadding = PaddingValues(
                 start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
@@ -308,6 +354,9 @@ fun RowComponentButtons() {
         ) {
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = "Copy Password")
+            if (curPlatforn != "Web with Kotlin/Wasm") {
+                clipboardManager!!.setText(AnnotatedString(passwordTextVal.value))
+            }
         }
     }
 }
@@ -324,10 +373,151 @@ fun RowComponentPasswordLabel(strPass: String) {
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleMedium,
-            fontSize = 39.sp,
+            fontSize = 30.sp,
+            lineHeight = 35.sp
+        )
+    }
+}
+
+@Composable
+fun RowComponentPasswordStrength(str: String) {
+    val passStr = Utilities.calculateStrengthOfPassword(passwordTextVal.value)
+    val inpText = "Password Strength : $passStr"
+    val strStrIndex = passStr.length
+    val startIndex = inpText.length - strStrIndex
+    val endIndex = inpText.length
+    val colorTemp = Utilities.calculatePasswordStrengthColor(passwordTextVal.value)
+    anotatedStringPasswordStrength = Utilities.createSpannableTextColor(
+        inpText,
+        startIndex,
+        endIndex,
+        colorTemp
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        Text(
+            text = anotatedStringPasswordStrength!!,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleMedium,
+            fontSize = 19.sp,
             color = MaterialTheme.colorScheme.primary
         )
     }
 }
+
+fun showSnackBarCoroutine(strVal: String) {
+    CoroutineScope(Dispatchers.Default).launch {
+        // Simulate snackbarshow data
+        showSnackBarVal.value = true
+        snackBarMessageVal.value = strVal
+        delay(2500)
+        // Update data on the main thread
+        withContext(Dispatchers.Main) {
+            showSnackBarVal.value = false
+            snackBarMessageVal.value = "-"
+        }
+    }
+}
+
+
+fun initValues() {
+    for (i in 0..25)
+        capital_letters_array[i] = (i + 65).toChar().toString()
+
+    for (i in 0..25)
+        small_letters_array[i] = (i + 97).toChar().toString()
+
+    for (i in 0..9)
+        numbers_array[i] = i.toString()
+
+    symbols_array = arrayOf(
+        "#",
+        "&",
+        "/",
+        "-",
+        "+",
+        "%",
+        "$",
+        "<",
+        ">",
+        "(",
+        ")",
+        "{",
+        "}",
+        "[",
+        "]"
+    )
+}
+
+//handle generate button click
+fun generateRandomPassword() {
+    try {
+        if (!mCheckedStateCapitalLetters.value && !mCheckedStateSmallLetters.value && !mCheckedStateSymbol.value && !mCheckedStateNumbers.value) {
+            //No choices selected
+            showSnackBarCoroutine(
+                "Select at least one constraint to generate a stronger password.",
+            )
+            return
+        }
+        if (passwordLengthVal.value < 1) {
+            showSnackBarCoroutine("Length should not be empty")
+            return
+        }
+        val current_val = passwordLengthVal.value
+        if (current_val < MIN_LENGTH) {
+            showSnackBarCoroutine(
+                "Password should be atleast $MIN_LENGTH characters in length"
+            )
+            return
+        } else if (current_val > MAX_LENGTH) {
+            showSnackBarCoroutine(
+                "Maximum value possible is $MAX_LENGTH",
+            )
+            return
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    try {
+        val selectedChoices = booleanArrayOf(
+            mCheckedStateCapitalLetters.value,
+            mCheckedStateSmallLetters.value,
+            mCheckedStateNumbers.value,
+            mCheckedStateSymbol.value
+        )
+        val maxAvailableChoices = 3
+        val elements =
+            arrayOf(capital_letters_array, small_letters_array, numbers_array, symbols_array)
+        val newPassword = StringBuilder()
+        val passwordLength = passwordLengthVal.value
+        for (i in 0 until passwordLength) {
+            var randomChoice: Int
+            do {
+                val rnd = (0..maxAvailableChoices).random()
+                randomChoice = rnd
+                if (randomChoice >= selectedChoices.size) randomChoice = selectedChoices.size - 1
+            } while (!selectedChoices[randomChoice])
+
+            val tSize = elements[randomChoice].size - 1
+            val rnd1 = (0..tSize).random()
+            var randomCharIndex = rnd1
+            if (randomCharIndex >= elements[randomChoice].size) randomCharIndex =
+                elements[randomChoice].size - 1
+            newPassword.append(elements[randomChoice][randomCharIndex])
+        }
+        passwordTextVal.value = newPassword.toString()
+        showSnackBarCoroutine("Random password generated.")
+        val tempText = Utilities.calculateStrengthOfPassword(newPassword.toString())
+        mPasswordStrength.value = "Password Strength : $tempText"
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
+
 
 

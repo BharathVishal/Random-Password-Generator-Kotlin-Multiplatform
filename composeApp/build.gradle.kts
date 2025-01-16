@@ -72,6 +72,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(compose.material3)
+            implementation(libs.secure.random)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
         }
@@ -112,7 +113,6 @@ android {
 dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.material)
-    debugImplementation(compose.uiTooling)
     debugImplementation(compose.uiTooling)
 }
 
