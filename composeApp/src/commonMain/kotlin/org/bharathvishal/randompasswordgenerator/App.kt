@@ -28,6 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -73,6 +77,7 @@ import randompasswordgenerator.composeapp.generated.resources.Res
 import randompasswordgenerator.composeapp.generated.resources.baseline_password_24
 import randompasswordgenerator.composeapp.generated.resources.compose_multiplatform
 import randompasswordgenerator.composeapp.generated.resources.dark_mode_24dp
+import randompasswordgenerator.composeapp.generated.resources.info_24dp
 import randompasswordgenerator.composeapp.generated.resources.light_mode_24dp
 
 private var showSnackBarVal = mutableStateOf(false)
@@ -89,6 +94,7 @@ var anotatedStringPasswordStrength: AnnotatedString? = null
 var thumbThemeSelected = mutableStateOf(false)
 var isDarkTheme = mutableStateOf(false)
 var isThemeIconVisible = mutableStateOf(false)
+var shouldShowDialogAbout = mutableStateOf(false)
 
 private val capital_letters_array = arrayOfNulls<String>(26)
 private val small_letters_array = arrayOfNulls<String>(26)
@@ -139,6 +145,9 @@ fun MainViewImplementation() {
                 ) {
                     SnackBarViewComposable(showSnackBarVal.value, snackBarMessageVal.value)
                     initValues()
+                    if (shouldShowDialogAbout.value) {
+                        AlertDialogAbout()
+                    }
                 }
             }
         }
@@ -175,7 +184,7 @@ fun CardViewMain() {
             ) {
                 ImageLogo()
                 TextHeader()
-                ImageButtonTheme(isThemeIconVisible.value)
+                RowComponentImageButtons()
                 Divider(thickness = 0.5.dp)
                 RowComponentPasswordLabel(passwordTextVal.value)
                 RowComponentPasswordStrength(mPasswordStrength.value)
@@ -231,6 +240,22 @@ fun ImageButtonTheme(visibility: Boolean) {
 }
 
 
+@Composable
+fun ImageButtonAbout() {
+    IconButton(
+        onClick = {
+            shouldShowDialogAbout.value = true
+        }
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.info_24dp),
+            contentDescription = "About switch",
+            modifier = Modifier.requiredHeight(35.dp).requiredWidth(35.dp).padding(1.dp)
+        )
+    }
+}
+
+
 //Biometric Authentication app name Text
 @Composable
 fun TextHeader() {
@@ -240,6 +265,30 @@ fun TextHeader() {
         modifier = Modifier.padding(1.dp).fillMaxWidth(),
         style = MaterialTheme.typography.headlineSmall
     )
+}
+
+@Composable
+fun AlertDialogAbout() {
+    if (shouldShowDialogAbout.value) {
+        AlertDialog(
+            onDismissRequest = {
+                shouldShowDialogAbout.value = false
+            },
+            title = { Text(text = "About App") },
+            text = { Text(text = "© 2025. Developed by Bharath Vishal. Open Source Software licensed with Apache 2.0 license. ") },
+            confirmButton = { // 6
+                Button(
+                    onClick = {
+                        shouldShowDialogAbout.value = false
+                    }
+                ) {
+                    Text(
+                        text = "Close",
+                    )
+                }
+            }
+        )
+    }
 }
 
 @Composable
@@ -422,6 +471,18 @@ fun showSnackBarCoroutine(strVal: String) {
             showSnackBarVal.value = false
             snackBarMessageVal.value = "-"
         }
+    }
+}
+
+
+@Composable
+fun RowComponentImageButtons() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        ImageButtonTheme(isThemeIconVisible.value)
+        ImageButtonAbout()
     }
 }
 
