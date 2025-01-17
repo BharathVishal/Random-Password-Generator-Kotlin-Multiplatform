@@ -45,7 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,7 +53,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -62,10 +61,17 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.bharathvishal.biometricauthentication.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bharathvishal.randompasswordgenerator.Constants.Constants
@@ -75,7 +81,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import randompasswordgenerator.composeapp.generated.resources.Res
 import randompasswordgenerator.composeapp.generated.resources.baseline_password_24
-import randompasswordgenerator.composeapp.generated.resources.compose_multiplatform
 import randompasswordgenerator.composeapp.generated.resources.dark_mode_24dp
 import randompasswordgenerator.composeapp.generated.resources.info_24dp
 import randompasswordgenerator.composeapp.generated.resources.light_mode_24dp
@@ -102,12 +107,75 @@ private val numbers_array = arrayOfNulls<String>(10)
 private lateinit var symbols_array: Array<String?>
 val MAX_LENGTH = 30
 val MIN_LENGTH = 5
+private var prefsFile: DataStore<Preferences>? = null
+private var initialisedValues=false
 
 @Composable
 @Preview
 fun App(
-    darkTheme: Boolean, dynamicColor: Boolean
+    darkTheme: Boolean, dynamicColor: Boolean, prefs: DataStore<Preferences>
 ) {
+    prefsFile = prefs
+    val prefsIncludeCapLetters by prefs
+        .data
+        .map {
+            val curKey = booleanPreferencesKey("IncludeCapLetters")
+            it[curKey] ?: false
+        }
+        .collectAsState(false)
+
+    val prefsIncludeSmallLetters by prefs
+        .data
+        .map {
+            val curKey = booleanPreferencesKey("IncludeSmallLetters")
+            it[curKey] ?: false
+        }
+        .collectAsState(false)
+
+    val prefsIncludeNumbers by prefs
+        .data
+        .map {
+            val curKey = booleanPreferencesKey("IncludeNumbers")
+            it[curKey] ?: false
+        }
+        .collectAsState(false)
+    val prefsIncludeSymbols by prefs
+        .data
+        .map {
+            val curKey = booleanPreferencesKey("IncludeSymbols")
+            it[curKey] ?: false
+        }
+        .collectAsState(false)
+    val prefsPasswordLength by prefs
+        .data
+        .map {
+            val curKey = intPreferencesKey("PassLength")
+            it[curKey] ?: 5
+        }
+        .collectAsState(5)
+    val prefsPasswordSavedOld by prefs
+        .data
+        .map {
+            val curKey = stringPreferencesKey("OldPassword")
+            it[curKey] ?: "ABCDE"
+        }
+        .collectAsState("ABCDE")
+    val prefsPasswordSavedOldStr by prefs
+        .data
+        .map {
+            val curKey = stringPreferencesKey("OldPasswordStr")
+            it[curKey] ?: "Password Strength : Medium"
+        }
+        .collectAsState("Password Strength : Medium")
+
+    mCheckedStateCapitalLetters.value = prefsIncludeCapLetters.toString().toBoolean()
+    mCheckedStateSmallLetters.value = prefsIncludeSmallLetters.toString().toBoolean()
+    mCheckedStateNumbers.value = prefsIncludeNumbers.toString().toBoolean()
+    mCheckedStateSymbol.value = prefsIncludeSymbols.toString().toBoolean()
+    passwordLengthVal.value=prefsPasswordLength
+    passwordTextVal.value= prefsPasswordSavedOld
+    mPasswordStrength.value= prefsPasswordSavedOldStr
+
     AppTheme(
         darkTheme = (if (isSystemInDarkTheme()) {
             isThemeIconVisible.value = false
@@ -144,7 +212,10 @@ fun MainViewImplementation() {
                         .align(Alignment.BottomStart)
                 ) {
                     SnackBarViewComposable(showSnackBarVal.value, snackBarMessageVal.value)
-                    initValues()
+                    if(!initialisedValues) {
+                        initValues()
+                        initialisedValues=true
+                    }
                     if (shouldShowDialogAbout.value) {
                         AlertDialogAbout()
                     }
@@ -192,13 +263,19 @@ fun CardViewMain() {
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSlider(Constants.PASSWORD_LENGTH)
                 Divider(thickness = 0.5.dp)
-                RowComponentInCardSwitch(Constants.INCLUDE_CAPITAL_LETTERS)
+                RowComponentInCardSwitch(
+                    Constants.INCLUDE_CAPITAL_LETTERS,
+                    mCheckedStateCapitalLetters.value
+                )
                 Divider(thickness = 0.5.dp)
-                RowComponentInCardSwitch(Constants.INCLUDE_SMALL_LETTERS)
+                RowComponentInCardSwitch(
+                    Constants.INCLUDE_SMALL_LETTERS,
+                    mCheckedStateSmallLetters.value
+                )
                 Spacer(modifier = Modifier.padding(top = 6.dp))
-                RowComponentInCardSwitch(Constants.INCLUDE_NUMBERS)
+                RowComponentInCardSwitch(Constants.INCLUDE_NUMBERS, mCheckedStateNumbers.value)
                 Spacer(modifier = Modifier.padding(top = 6.dp))
-                RowComponentInCardSwitch(Constants.INCLUDE_SYMBOLS)
+                RowComponentInCardSwitch(Constants.INCLUDE_SYMBOLS, mCheckedStateSymbol.value)
                 Spacer(modifier = Modifier.padding(top = 6.dp))
             }//end of column
         }//end of card
@@ -293,13 +370,15 @@ fun AlertDialogAbout() {
 
 @Composable
 fun SnackBarViewComposable(visibilityState: Boolean, message: String) {
-    AnimatedVisibility(
-        visible = visibilityState,
-        enter = fadeIn(animationSpec = tween(500)),
-        exit = fadeOut(animationSpec = tween(250))
-    ) {
-        Snackbar(action = {}, modifier = Modifier.fillMaxWidth()) {
-            Text(text = message)
+    if(visibilityState) {
+        AnimatedVisibility(
+            visible = visibilityState,
+            enter = fadeIn(animationSpec = tween(500)),
+            exit = fadeOut(animationSpec = tween(250))
+        ) {
+            Snackbar(action = {}, modifier = Modifier.fillMaxWidth()) {
+                Text(text = message)
+            }
         }
     }
 }
@@ -310,6 +389,7 @@ fun SnackBarViewComposable(visibilityState: Boolean, message: String) {
 fun RowComponentInCardSlider(strDesc: String) {
     var sliderPosition by remember { mutableFloatStateOf(5f) }
     val haptic = LocalHapticFeedback.current
+    sliderPosition= passwordLengthVal.value.toFloat()
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
@@ -341,15 +421,9 @@ fun RowComponentInCardSlider(strDesc: String) {
 
 
 @Composable
-fun RowComponentInCardSwitch(strDesc: String) {
+fun RowComponentInCardSwitch(strDesc: String, boolValue: Boolean) {
     val mCheckedState = remember { mutableStateOf(false) }
-
-    when (strDesc) {
-        Constants.INCLUDE_CAPITAL_LETTERS -> mCheckedStateCapitalLetters.value = mCheckedState.value
-        Constants.INCLUDE_SMALL_LETTERS -> mCheckedStateSmallLetters.value = mCheckedState.value
-        Constants.INCLUDE_NUMBERS -> mCheckedStateNumbers.value = mCheckedState.value
-        Constants.INCLUDE_SYMBOLS -> mCheckedStateSymbol.value = mCheckedState.value
-    }
+    mCheckedState.value = boolValue
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
@@ -362,7 +436,31 @@ fun RowComponentInCardSwitch(strDesc: String) {
             color = MaterialTheme.colorScheme.primary
         )
 
-        Switch(checked = mCheckedState.value, onCheckedChange = { mCheckedState.value = it })
+        Switch(checked = mCheckedState.value, onCheckedChange = {
+            mCheckedState.value = it
+
+            when (strDesc) {
+                Constants.INCLUDE_CAPITAL_LETTERS -> {
+                    mCheckedStateCapitalLetters.value = mCheckedState.value
+                    updateKeyValueToDataStore("IncludeCapLetters", mCheckedState.value)
+                }
+
+                Constants.INCLUDE_SMALL_LETTERS -> {
+                    mCheckedStateSmallLetters.value = mCheckedState.value
+                    updateKeyValueToDataStore("IncludeSmallLetters", mCheckedState.value)
+                }
+
+                Constants.INCLUDE_NUMBERS -> {
+                    mCheckedStateNumbers.value = mCheckedState.value
+                    updateKeyValueToDataStore("IncludeNumbers", mCheckedState.value)
+                }
+
+                Constants.INCLUDE_SYMBOLS -> {
+                    mCheckedStateSymbol.value = mCheckedState.value
+                    updateKeyValueToDataStore("IncludeSymbols", mCheckedState.value)
+                }
+            }
+        })
     }
 }
 
@@ -457,20 +555,6 @@ fun RowComponentPasswordStrength(str: String) {
             fontSize = 19.sp,
             color = MaterialTheme.colorScheme.primary
         )
-    }
-}
-
-fun showSnackBarCoroutine(strVal: String) {
-    CoroutineScope(Dispatchers.Default).launch {
-        // Simulate snackbarshow data
-        showSnackBarVal.value = true
-        snackBarMessageVal.value = strVal
-        delay(2500)
-        // Update data on the main thread
-        withContext(Dispatchers.Main) {
-            showSnackBarVal.value = false
-            snackBarMessageVal.value = "-"
-        }
     }
 }
 
@@ -577,10 +661,54 @@ fun generateRandomPassword() {
         showSnackBarCoroutine("Random password generated.")
         val tempText = Utilities.calculateStrengthOfPassword(newPassword.toString())
         mPasswordStrength.value = "Password Strength : $tempText"
+
+        updateKeyValueToDataStoreString("OldPassword",passwordTextVal.value)
+        updateKeyValueToDataStoreString("OldPasswordStr",mPasswordStrength.value)
+        updateKeyValueToDataStoreInt("PassLength",passwordLengthVal.value)
     } catch (e: Exception) {
         e.printStackTrace()
     }
 }
 
 
+fun showSnackBarCoroutine(strVal: String) {
+    CoroutineScope(Dispatchers.Default).launch {
+        // Simulate snackbarshow data
+        showSnackBarVal.value = true
+        snackBarMessageVal.value = strVal
+        delay(2500)
+        // Update data on the main thread
+        withContext(Dispatchers.Main) {
+            showSnackBarVal.value = false
+            snackBarMessageVal.value = "-"
+        }
+    }
+}
 
+fun updateKeyValueToDataStore(strKey: String, boolValue: Boolean) {
+    CoroutineScope(Dispatchers.Default).launch {
+        prefsFile?.edit { dataStore ->
+            val counterKey = booleanPreferencesKey(strKey)
+            dataStore[counterKey] = boolValue
+        }
+    }
+}
+
+
+fun updateKeyValueToDataStoreInt(strKey: String, intValue: Int) {
+    CoroutineScope(Dispatchers.Default).launch {
+        prefsFile?.edit { dataStore ->
+            val counterKey = intPreferencesKey(strKey)
+            dataStore[counterKey] = intValue
+        }
+    }
+}
+
+fun updateKeyValueToDataStoreString(strKey: String, strValue: String) {
+    CoroutineScope(Dispatchers.Default).launch {
+        prefsFile?.edit { dataStore ->
+            val counterKey = stringPreferencesKey(strKey)
+            dataStore[counterKey] = strValue
+        }
+    }
+}

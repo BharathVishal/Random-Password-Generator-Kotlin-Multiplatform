@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 
@@ -19,7 +20,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             App(
                 darkTheme = isSystemInDarkTheme(),
-                dynamicColor = true, // dynamic color true for android)
+                dynamicColor = true,
+                prefs = remember {
+                    createDataStore(applicationContext)
+                }
             )
         }
     }
@@ -28,5 +32,8 @@ class MainActivity : ComponentActivity() {
 @Preview
 @Composable
 fun AppAndroidPreview() {
-    App(true, true)
+    App(
+        true, true,
+        prefs = TODO()
+    )
 }

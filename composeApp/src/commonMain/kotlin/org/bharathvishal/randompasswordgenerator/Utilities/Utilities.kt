@@ -9,117 +9,113 @@ import org.bharathvishal.randompasswordgenerator.Constants.Constants
 
 object Utilities {
     fun calculateStrengthOfPassword(password: String): String {
-        val REQUIRED_LENGTH = 8
-        val MAXIMUM_LENGTH = 20
-        val REQUIRE_SPECIAL_CHARACTERS = true
-        val REQUIRE_DIGITS = true
-        val REQUIRE_LOWER_CASE = true
-        val REQUIRE_UPPER_CASE = true
+        val requiredLength = 8
+        val maximumLength = 18
 
-        val WEAK = "Weak"
-        val MEDIUM = "Medium"
-        //Color.argb(255, 220, 185, 0)),
-        val STRONG = "Strong"
-        val VERY_STRONG = "Very Strong"
+        val weakPassword = "Weak"
+        val mediumPassword = "Medium"
+        val strongPassword = "Strong"
+        val veryStrongPassword = "Very Strong"
 
         var currentScore = 0
-        var sawUpper = false
-        var sawLower = false
-        var sawDigit = false
-        var sawSpecial = false
-        for (i in 0 until password.length) {
-            val c = password[i]
-            if (!sawSpecial && !c.isLetterOrDigit()) {
-                currentScore += 1
-                sawSpecial = true
-            } else {
-                if (!sawDigit && c.isDigit()) {
+        var sawAUpperCaseChar = false
+        var sawALowerCaseChar = false
+        var sawADigit = false
+        var sawASpecialChar = false
+        val passWordLength = password.length
+
+        for (i in 0 until passWordLength) {
+            val curChar = password[i]
+            if (curChar.isLetterOrDigit()) {
+                if (curChar.isUpperCase() && !sawAUpperCaseChar) {
+                    sawAUpperCaseChar = true
                     currentScore += 1
-                    sawDigit = true
-                } else {
-                    if (!sawUpper || !sawLower) {
-                        if (c.isUpperCase()) sawUpper = true else sawLower = true
-                        if (sawUpper && sawLower) currentScore += 1
-                    }
+                }
+                if (curChar.isLowerCase() && !sawALowerCaseChar) {
+                    sawALowerCaseChar = true
+                    currentScore += 1
+                }
+                if (curChar.isDigit() && !sawADigit) {
+                    sawADigit = true
+                    currentScore += 1
+                }
+            } else {
+                if (!sawASpecialChar) {
+                    currentScore += 1
+                    sawASpecialChar = true
                 }
             }
         }
-        if (password.length > REQUIRED_LENGTH) {
-            if (REQUIRE_SPECIAL_CHARACTERS && !sawSpecial || REQUIRE_UPPER_CASE && !sawUpper || REQUIRE_LOWER_CASE && !sawLower || REQUIRE_DIGITS && !sawDigit) {
-                currentScore = 1
-            } else {
-                currentScore = 2
-                if (password.length > MAXIMUM_LENGTH) {
-                    currentScore = 3
-                }
-            }
+
+        if (passWordLength > requiredLength) {
+            currentScore += 1
+        } else if (passWordLength > maximumLength) {
+            currentScore += 1
         } else {
             currentScore = 0
         }
+
         when (currentScore) {
-            0 -> return WEAK
-            1 -> return MEDIUM
-            2 -> return STRONG
-            3 -> return VERY_STRONG
+            0 -> return weakPassword
+            1 -> return weakPassword
+            2 -> return mediumPassword
+            3 -> return mediumPassword
+            4 -> return strongPassword
+            5 -> return veryStrongPassword
             else -> {}
         }
-        return VERY_STRONG
+        return veryStrongPassword
     }
 
-
     fun calculatePasswordStrengthColor(password: String): Color {
-        val REQUIRED_LENGTH = 8
-        val MAXIMUM_LENGTH = 20
-        val REQUIRE_SPECIAL_CHARACTERS = true
-        val REQUIRE_DIGITS = true
-        val REQUIRE_LOWER_CASE = true
-        val REQUIRE_UPPER_CASE = true
-
-        val WEAK = "Weak"
-        val MEDIUM = "Medium"
-        //Color.argb(255, 220, 185, 0)),
-        val STRONG = "Strong"
-        val VERY_STRONG = "Very Strong"
+        val requiredLength = 8
+        val maximumLength = 18
 
         var currentScore = 0
-        var sawUpper = false
-        var sawLower = false
-        var sawDigit = false
-        var sawSpecial = false
-        for (i in 0 until password.length) {
-            val c = password[i]
-            if (!sawSpecial && !c.isLetterOrDigit()) {
-                currentScore += 1
-                sawSpecial = true
-            } else {
-                if (!sawDigit && c.isDigit()) {
+        var sawAUpperCaseChar = false
+        var sawALowerCaseChar = false
+        var sawADigit = false
+        var sawASpecialChar = false
+        val passWordLength = password.length
+
+        for (i in 0 until passWordLength) {
+            val curChar = password[i]
+            if (curChar.isLetterOrDigit()) {
+                if (curChar.isUpperCase() && !sawAUpperCaseChar) {
+                    sawAUpperCaseChar = true
                     currentScore += 1
-                    sawDigit = true
-                } else {
-                    if (!sawUpper || !sawLower) {
-                        if (c.isUpperCase()) sawUpper = true else sawLower = true
-                        if (sawUpper && sawLower) currentScore += 1
-                    }
+                }
+                if (curChar.isLowerCase() && !sawALowerCaseChar) {
+                    sawALowerCaseChar = true
+                    currentScore += 1
+                }
+                if (curChar.isDigit() && !sawADigit) {
+                    sawADigit = true
+                    currentScore += 1
+                }
+            } else {
+                if (!sawASpecialChar) {
+                    currentScore += 1
+                    sawASpecialChar = true
                 }
             }
         }
-        if (password.length > REQUIRED_LENGTH) {
-            if (REQUIRE_SPECIAL_CHARACTERS && !sawSpecial || REQUIRE_UPPER_CASE && !sawUpper || REQUIRE_LOWER_CASE && !sawLower || REQUIRE_DIGITS && !sawDigit) {
-                currentScore = 1
-            } else {
-                currentScore = 2
-                if (password.length > MAXIMUM_LENGTH) {
-                    currentScore = 3
-                }
-            }
+
+        if (passWordLength > requiredLength) {
+            currentScore += 1
+        } else if (passWordLength > maximumLength) {
+            currentScore += 1
         } else {
             currentScore = 0
         }
+
         when (currentScore) {
             0 -> return Constants.passwordColorWeak
-            1 -> return Constants.passwordColorMedium
-            2 -> return Constants.passwordColorStrong
-            3 -> return Constants.passwordColorVeryStrong
+            1 -> return Constants.passwordColorWeak
+            2 -> return Constants.passwordColorMedium
+            3 -> return Constants.passwordColorMedium
+            4 -> return Constants.passwordColorStrong
+            5 -> return Constants.passwordColorVeryStrong
             else -> {}
         }
         return Constants.passwordColorVeryStrong

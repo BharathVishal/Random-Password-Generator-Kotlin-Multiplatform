@@ -75,6 +75,7 @@ kotlin {
             implementation(libs.secure.random)
             @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
+            implementation(libs.androidx.datastore.preferences.core)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -113,6 +114,7 @@ android {
 dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.material)
+    implementation(libs.androidx.datastore.core.android)
     debugImplementation(compose.uiTooling)
 }
 
