@@ -15,7 +15,7 @@ class SharedPrefsUtil {
     }
 
     fun getKeyValueFromPreferencesString(strKey: String): String? {
-        return settingsPref?.getString(strKey, "")
+        return settingsPref?.getString(strKey, "Password")
     }
 
     fun getKeyValueFromPreferencesInt(strKey: String): Int? {
