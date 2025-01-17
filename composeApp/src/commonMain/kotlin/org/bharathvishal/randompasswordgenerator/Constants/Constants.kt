@@ -18,7 +18,6 @@
 
 package org.bharathvishal.randompasswordgenerator.Constants
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -26,7 +25,7 @@ import androidx.compose.ui.text.withStyle
 
 
 object Constants {
-    const val MAX_LENGTH = 30
+    const val MAX_LENGTH = 45
     const val MIN_LENGTH = 5
 
     const val PASSWORD_LENGTH = "Password Length"
@@ -47,7 +46,6 @@ object Constants {
     const val prefsPasswordLength = "PassLength"
     const val prefsPasswordSavedOld = "OldPassword"
     const val prefsPasswordSavedOldStr = "OldPasswordStr"
-    const val prefsSavedTheme = "prefsSavedTheme"
 
     const val SELECTED_THEME = "SELECTED_THEME"
     const val SELECTED_THEME_NIGHT = "NIGHT_MODE"
@@ -61,10 +59,13 @@ object Constants {
     const val APP_CREDITS =
         "© 2025. Developed by Bharath Vishal. Open Source Software licensed with Apache 2.0 license."
 
+
+    const val HUNDRED_RANDOM_PASSWORDS_GENERATED = "Generated one hundred random passwords."
     const val RANDOM_PASSWORD_GENERATED = "Random password generated."
     const val SNACKBARMESSAGE_VAL_EMPTY = "-"
     const val DEFAULT_PASSWORD_VALUE = "ABCDEFGHIJK"
     const val GENERATE_PASSWORD = "Generate Password"
+    const val GENERATE_HUNDRED_PASSWORD = "Generate Hundred Random Passwords"
     const val COPIED_PASSWORD_TO_CLIPBOARD = "Copied password to Clipboard."
     const val COPY_PASSWORD = "Copy Password"
     const val PASSWORD_STRENGTH = "Password Strength"
@@ -84,7 +85,8 @@ object Constants {
         "{",
         "}",
         "[",
-        "]"
+        "]",
+        "_"
     )
 
     const val SELECT_ATLEAST_ONE_CONSTRAINT_TO_GENERATE_STRONGER_PASSWORD =
@@ -96,9 +98,9 @@ object Constants {
         "Password should be atleast $MIN_LENGTH characters in length"
 
     const val APACHE_LICENSE_LINK = "https://github.com/apache/.github/blob/main/LICENSE"
-    const val GROUP_TAG = "groupName"
     const val LICENSE_TAG = "license"
 
+    const val GENERATED_RANDOM_PASSWORDS = "Generated Random Passwords"
     const val APP_ABOUT_MAIN = "© 2025. Developed by Bharath Vishal. "
     val annotatedStringCredits = buildAnnotatedString {
         append("Open Source Software licensed with ")

@@ -26,6 +26,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -43,8 +45,12 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Scaffold
@@ -118,6 +124,7 @@ var thumbThemeSelected = mutableStateOf(false)
 var isDarkTheme = mutableStateOf(false)
 var isThemeIconVisible = mutableStateOf(false)
 var shouldShowDialogAbout = mutableStateOf(false)
+var shouldShowDialogRandomPasswords = mutableStateOf(false)
 
 private val capital_letters_array = arrayOfNulls<String>(26)
 private val small_letters_array = arrayOfNulls<String>(26)
@@ -126,6 +133,7 @@ private lateinit var symbols_array: Array<String>
 private var initialisedValues = false
 private val settingsPrefs: SharedPrefsUtil = SharedPrefsUtil()
 private var curSelectedTheme = Constants.SELECTED_THEME_NIGHT
+private val randomPasswords = mutableListOf<String>()
 
 @Composable
 @Preview
@@ -133,6 +141,7 @@ fun App(
     darkTheme: Boolean, dynamicColor: Boolean
 ) {
     settingsPrefs.InitSharedPrefs()
+    randomPasswords.clear()
     println("App Initialised with Settings Pref.")
 
     val prefsIncludeCapLetters =
@@ -188,12 +197,19 @@ fun App(
 
 @Composable
 fun MainViewImplementation() {
+    var clipboardManager: ClipboardManager? = null
+    val curPlatforn = getPlatform().name
+    if (curPlatforn != Constants.PLATFORM_WEB) {
+        clipboardManager = LocalClipboardManager.current
+    }
+
     Scaffold(topBar = { TopAppBarMain() }) {
         Column(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background)
+            modifier = Modifier.background(MaterialTheme.colorScheme.background).fillMaxWidth()
+                .fillMaxHeight()
         ) {
             Box(
-                modifier = Modifier.padding(1.dp).fillMaxWidth().fillMaxHeight()
+                modifier = Modifier.padding(5.dp)
                     .background(MaterialTheme.colorScheme.background),
             ) {
                 CardViewMain()
@@ -210,6 +226,17 @@ fun MainViewImplementation() {
                     if (shouldShowDialogAbout.value) {
                         AlertDialogAbout()
                     }
+
+                    if (shouldShowDialogRandomPasswords.value) {
+                        AlertDialogRandomPasswords()
+                    }
+
+                    if (copyToClipboard.value) {
+                        if (curPlatforn != Constants.PLATFORM_WEB) {
+                            clipboardManager!!.setText(AnnotatedString(passwordTextVal.value))
+                        }
+                        copyToClipboard.value = false
+                    }//end of copy to clipboard
                 }
             }
         }
@@ -251,6 +278,8 @@ fun CardViewMain() {
                 RowComponentPasswordStrength()
                 RowComponentButtons()
                 Divider(thickness = 0.5.dp)
+                RowComponentButtonSecond()
+                Divider(thickness = 0.5.dp)
                 RowComponentInCardSlider(Constants.PASSWORD_LENGTH)
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSwitch(
@@ -262,11 +291,11 @@ fun CardViewMain() {
                     Constants.INCLUDE_SMALL_LETTERS,
                     mCheckedStateSmallLetters.value
                 )
-                Spacer(modifier = Modifier.padding(top = 6.dp))
+                Spacer(modifier = Modifier.padding(top = 4.dp))
                 RowComponentInCardSwitch(Constants.INCLUDE_NUMBERS, mCheckedStateNumbers.value)
-                Spacer(modifier = Modifier.padding(top = 6.dp))
+                Spacer(modifier = Modifier.padding(top = 4.dp))
                 RowComponentInCardSwitch(Constants.INCLUDE_SYMBOLS, mCheckedStateSymbol.value)
-                Spacer(modifier = Modifier.padding(top = 6.dp))
+                Spacer(modifier = Modifier.padding(bottom = 25.dp))
             }//end of column
         }//end of card
     }//end of outer column
@@ -278,7 +307,7 @@ fun ImageLogo() {
     Image(
         painter = painterResource(Res.drawable.baseline_password_24),
         contentDescription = "Image Logo",
-        modifier = Modifier.requiredHeight(100.dp).requiredWidth(100.dp).padding(1.dp)
+        modifier = Modifier.requiredHeight(90.dp).requiredWidth(90.dp).padding(1.dp)
     )
 }
 
@@ -356,31 +385,41 @@ fun AlertDialogAbout() {
             },
             title = {
                 Text(
-                    text = Constants.APP_ABOUT_MAIN, style = MaterialTheme.typography.labelMedium,
-                    fontSize = 25.sp,
-                    lineHeight = 25.sp
+                    text = Constants.APP_ABOUT,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontSize = 24.sp,
+                    lineHeight = 24.sp
                 )
             },
             text = {
-                Text(
-                    modifier = Modifier.clickable {
-                        val annotation = annotatedText.getStringAnnotations(
-                            tag = Constants.LICENSE_TAG,
-                            start = 0,
-                            end = annotatedText.length - 1
-                        ).firstOrNull()
+                Column {
+                    Text(
+                        text = Constants.APP_ABOUT_MAIN,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontSize = 19.sp,
+                        lineHeight = 19.sp
+                    )
+                    Spacer(modifier = Modifier.padding(top = 9.dp))
+                    Text(
+                        modifier = Modifier.clickable {
+                            val annotation = annotatedText.getStringAnnotations(
+                                tag = Constants.LICENSE_TAG,
+                                start = 0,
+                                end = annotatedText.length - 1
+                            ).firstOrNull()
 
-                        if (annotation != null) {
-                            localUriHandler.openUri(Constants.APACHE_LICENSE_LINK)
-                        }
-                    },
-                    text = Constants.annotatedStringCredits,
-                    style = TextStyle.Default,
-                    fontSize = 19.sp,
-                    lineHeight = 19.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 5
-                )
+                            if (annotation != null) {
+                                localUriHandler.openUri(Constants.APACHE_LICENSE_LINK)
+                            }
+                        },
+                        text = Constants.annotatedStringCredits,
+                        style = TextStyle.Default,
+                        fontSize = 19.sp,
+                        lineHeight = 19.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 5
+                    )
+                }
             },
             confirmButton = {
                 Button(
@@ -446,7 +485,7 @@ fun RowComponentInCardSlider(strDesc: String) {
                 passwordLengthVal.value = it.toInt()
                 generateRandomPassword()
             },
-            steps = 30, valueRange = 5f..30f,
+            steps = 30, valueRange = 5f..45f,
             thumb = {
                 SliderDefaults.Thumb(
                     interactionSource = interactionSource,
@@ -518,13 +557,6 @@ fun RowComponentInCardSwitch(strDesc: String, boolValue: Boolean) {
 
 @Composable
 fun RowComponentButtons() {
-    var clipboardManager: ClipboardManager? = null
-    val curPlatforn = getPlatform().name
-
-    if (curPlatforn != Constants.PLATFORM_WEB) {
-        clipboardManager = LocalClipboardManager.current
-    }
-
     Row(
         modifier = Modifier.fillMaxWidth().padding(4.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -535,7 +567,7 @@ fun RowComponentButtons() {
                 generateRandomPassword()
             },
             contentPadding = PaddingValues(
-                start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
+                start = 5.dp, top = 5.dp, end = 5.dp, bottom = 5.dp
             ),
         ) {
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
@@ -549,14 +581,33 @@ fun RowComponentButtons() {
                 showSnackBarCoroutine(Constants.COPIED_PASSWORD_TO_CLIPBOARD)
             },
             contentPadding = PaddingValues(
-                start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
+                start = 5.dp, top = 5.dp, end = 5.dp, bottom = 5.dp
             ),
         ) {
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
             Text(text = Constants.COPY_PASSWORD)
-            if (curPlatforn != Constants.PLATFORM_WEB) {
-                clipboardManager!!.setText(AnnotatedString(passwordTextVal.value))
-            }
+        }
+    }
+}
+
+
+@Composable
+fun RowComponentButtonSecond() {
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        OutlinedButton(
+            modifier = Modifier.weight(1F),
+            onClick = {
+                generateHundredRandomPasswords()
+            },
+            contentPadding = PaddingValues(
+                start = 5.dp, top = 5.dp, end = 5.dp, bottom = 5.dp
+            ),
+        ) {
+            Spacer(Modifier.size(ButtonDefaults.IconSpacing))
+            Text(text = Constants.GENERATE_HUNDRED_PASSWORD)
         }
     }
 }
@@ -718,6 +769,171 @@ fun generateRandomPassword() {
     }
 }
 
+
+fun generateHundredRandomPasswords() {
+    try {
+        if (!mCheckedStateCapitalLetters.value && !mCheckedStateSmallLetters.value && !mCheckedStateSymbol.value && !mCheckedStateNumbers.value) {
+            //No choices selected
+            showSnackBarCoroutine(
+                Constants.SELECT_ATLEAST_ONE_CONSTRAINT_TO_GENERATE_STRONGER_PASSWORD,
+            )
+            return
+        }
+        if (passwordLengthVal.value < 1) {
+            showSnackBarCoroutine(Constants.LENGTH_SHOULD_NOT_BE_EMPTY)
+            return
+        }
+        val currentVal = passwordLengthVal.value
+        if (currentVal < Constants.MIN_LENGTH) {
+            showSnackBarCoroutine(
+                Constants.PASSWORD_MIN_LENGTH_CONSTRAINT
+            )
+            return
+        } else if (currentVal > Constants.MAX_LENGTH) {
+            showSnackBarCoroutine(
+                Constants.PASSWORD_MAX_LENGTH_CONSTRAINT
+            )
+            return
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    CoroutineScope(Dispatchers.Default).launch {
+        try {
+            randomPasswords.clear()
+            for (i1 in 0 until 100) {
+                val selectedChoices = booleanArrayOf(
+                    mCheckedStateCapitalLetters.value,
+                    mCheckedStateSmallLetters.value,
+                    mCheckedStateNumbers.value,
+                    mCheckedStateSymbol.value
+                )
+                val maxAvailableChoices = 3
+                val elements =
+                    arrayOf(
+                        capital_letters_array,
+                        small_letters_array,
+                        numbers_array,
+                        symbols_array
+                    )
+                val newPassword = StringBuilder()
+                val passwordLength = passwordLengthVal.value
+                for (i in 0 until passwordLength) {
+                    var randomChoice: Int
+                    do {
+                        val rnd = (0..maxAvailableChoices).random()
+                        randomChoice = rnd
+                        if (randomChoice >= selectedChoices.size) randomChoice =
+                            selectedChoices.size - 1
+                    } while (!selectedChoices[randomChoice])
+
+                    val tSize = elements[randomChoice].size - 1
+                    val rnd1 = (0..tSize).random()
+                    var randomCharIndex = rnd1
+                    if (randomCharIndex >= elements[randomChoice].size) randomCharIndex =
+                        elements[randomChoice].size - 1
+                    newPassword.append(elements[randomChoice][randomCharIndex])
+                }
+
+                //For animated effect
+                //Remove it later to speed up
+                delay(4)
+
+                passwordTextVal.value = newPassword.toString()
+                val tempText = Utilities.calculateStrengthOfPassword(newPassword.toString())
+                mPasswordStrength.value = "${Constants.PASSWORD_STRENGTH} : $tempText"
+
+                settingsPrefs.updateKeyValueToDataStoreString(
+                    Constants.prefsPasswordSavedOld,
+                    passwordTextVal.value
+                )
+                settingsPrefs.updateKeyValueToDataStoreString(
+                    Constants.prefsPasswordSavedOldStr,
+                    mPasswordStrength.value
+                )
+                settingsPrefs.updateKeyValueToDataStoreInt(
+                    Constants.prefsPasswordLength,
+                    passwordLengthVal.value
+                )
+                randomPasswords.add(passwordTextVal.value)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        withContext(Dispatchers.Main) {
+            showSnackBarVal.value = false
+            snackBarMessageVal.value = Constants.SNACKBARMESSAGE_VAL_EMPTY
+            showSnackBarCoroutine(Constants.HUNDRED_RANDOM_PASSWORDS_GENERATED)
+
+            //Load dialog here
+            shouldShowDialogRandomPasswords.value = true
+        }
+    }
+}
+
+
+@Composable
+fun AlertDialogRandomPasswords() {
+    if (shouldShowDialogRandomPasswords.value) {
+        AlertDialog(
+            onDismissRequest = {
+                shouldShowDialogRandomPasswords.value = false
+            },
+            title = {
+                Text(
+                    text = Constants.GENERATED_RANDOM_PASSWORDS,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontSize = 24.sp,
+                    lineHeight = 24.sp
+                )
+            },
+            text = {
+                Column {
+                    LazyColumnListImplementation()
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        shouldShowDialogRandomPasswords.value = false
+                    }
+                ) {
+                    Text(
+                        text = Constants.APP_CLOSE,
+                    )
+                }
+            }
+        )
+    }
+}
+
+
+@Composable
+fun LazyColumnListImplementation() {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().padding(8.dp),
+        state = rememberLazyListState(),
+        contentPadding = PaddingValues(9.dp),
+        reverseLayout = false,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        flingBehavior = ScrollableDefaults.flingBehavior(),
+        userScrollEnabled = true
+    ) {
+        items(randomPasswords) { pass ->
+            SelectionContainer {
+                Text(
+                    text = pass,
+                    modifier = Modifier.padding(4.dp),
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontSize = 18.sp
+                )
+            }
+            Spacer(modifier = Modifier.padding(top = 9.dp))
+        }
+    }
+}
 
 fun showSnackBarCoroutine(strVal: String) {
     CoroutineScope(Dispatchers.Default).launch {
