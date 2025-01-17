@@ -9,8 +9,7 @@ import kotlinx.browser.document
 fun main() {
     ComposeViewport(document.body!!) {
         App(
-            isSystemInDarkTheme(), false,
-            prefs = TODO(),
+            isSystemInDarkTheme(), false
         )
     }
 }

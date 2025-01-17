@@ -73,9 +73,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtime.compose)
             implementation(compose.material3)
             implementation(libs.secure.random)
-            @OptIn(ExperimentalComposeLibrary::class)
             implementation(compose.components.resources)
-            //implementation(libs.androidx.datastore.preferences.core)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.no.arg)
         }

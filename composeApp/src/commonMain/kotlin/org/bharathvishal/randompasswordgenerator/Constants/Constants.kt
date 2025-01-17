@@ -14,4 +14,13 @@ object Constants {
     val passwordColorMedium = Color(0xFFFFBF00)
     val passwordColorStrong = Color(0xFF28B463)
     val passwordColorVeryStrong = Color(0xFF3399CC)
+
+    const val prefsIncludeCapLetters = "IncludeCapLetters"
+    const val prefsIncludeSmallLetters = "IncludeSmallLetters"
+    const val prefsIncludeNumbers = "IncludeNumbers"
+    const val prefsIncludeSymbols = "IncludeSymbols"
+    const val prefsPasswordLength = "PassLength"
+    const val prefsPasswordSavedOld = "OldPassword"
+    const val prefsPasswordSavedOldStr = "OldPasswordStr"
 }
+

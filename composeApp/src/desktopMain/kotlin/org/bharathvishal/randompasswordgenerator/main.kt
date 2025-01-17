@@ -7,7 +7,6 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
 import org.bharathvishal.randompasswordgenerator.Utilities.DATA_STORE_FILE_NAME
-import org.bharathvishal.randompasswordgenerator.Utilities.createDataStore
 
 fun main() = application {
     Window(
@@ -17,10 +16,7 @@ fun main() = application {
     ) {
         App(
             darkTheme = isSystemInDarkTheme(),
-            dynamicColor = false,
-            prefs = createDataStore {
-                DATA_STORE_FILE_NAME
-            }
+            dynamicColor = false
         )
     }
 }
