@@ -78,6 +78,7 @@ import org.bharathvishal.randompasswordgenerator.Constants.Constants
 import org.bharathvishal.randompasswordgenerator.Utilities.Utilities
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import com.russhwolf.settings.Settings
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import randompasswordgenerator.composeapp.generated.resources.Res
 import randompasswordgenerator.composeapp.generated.resources.baseline_password_24
@@ -109,6 +110,7 @@ val MAX_LENGTH = 30
 val MIN_LENGTH = 5
 private var prefsFile: DataStore<Preferences>? = null
 private var initialisedValues=false
+private val settingsPrefs = Settings()
 
 @Composable
 @Preview
