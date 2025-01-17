@@ -1,3 +1,21 @@
+/**
+ *
+ * Copyright 2025 Bharath Vishal G.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ **/
+
 package org.bharathvishal.randompasswordgenerator
 
 
@@ -80,8 +98,8 @@ import randompasswordgenerator.composeapp.generated.resources.light_mode_24dp
 
 private var showSnackBarVal = mutableStateOf(false)
 private var snackBarMessageVal = mutableStateOf("-")
-private var passwordTextVal = mutableStateOf("ABCDEFGHIJK")
-private var passwordLengthVal = mutableStateOf(5)
+private var passwordTextVal = mutableStateOf(Constants.DEFAULT_PASSWORD_VALUE)
+private var passwordLengthVal = mutableStateOf(Constants.MIN_LENGTH)
 val mCheckedStateCapitalLetters = mutableStateOf(false)
 val mCheckedStateSmallLetters = mutableStateOf(false)
 val mCheckedStateNumbers = mutableStateOf(false)
@@ -97,11 +115,10 @@ var shouldShowDialogAbout = mutableStateOf(false)
 private val capital_letters_array = arrayOfNulls<String>(26)
 private val small_letters_array = arrayOfNulls<String>(26)
 private val numbers_array = arrayOfNulls<String>(10)
-private lateinit var symbols_array: Array<String?>
-val MAX_LENGTH = 30
-val MIN_LENGTH = 5
+private lateinit var symbols_array: Array<String>
 private var initialisedValues = false
 private val settingsPrefs: SharedPrefsUtil = SharedPrefsUtil()
+private var curSelectedTheme = Constants.SELECTED_THEME_NIGHT
 
 @Composable
 @Preview
@@ -109,6 +126,7 @@ fun App(
     darkTheme: Boolean, dynamicColor: Boolean
 ) {
     settingsPrefs.InitSharedPrefs()
+    println("App Initialised with Settings Pref.")
 
     val prefsIncludeCapLetters =
         settingsPrefs.getKeyValueFromPreferencesBoolean(Constants.prefsIncludeCapLetters)
@@ -124,7 +142,8 @@ fun App(
         settingsPrefs.getKeyValueFromPreferencesString(Constants.prefsPasswordSavedOld)
     val prefsPasswordSavedOldStr =
         settingsPrefs.getKeyValueFromPreferencesString(Constants.prefsPasswordSavedOldStr)
-
+    val prefsSavedTheme =
+        settingsPrefs.getKeyValueFromPreferencesString(Constants.SELECTED_THEME)
 
     mCheckedStateCapitalLetters.value = prefsIncludeCapLetters.toString().toBoolean()
     mCheckedStateSmallLetters.value = prefsIncludeSmallLetters.toString().toBoolean()
@@ -138,6 +157,9 @@ fun App(
     }
     if (prefsPasswordSavedOldStr != null) {
         mPasswordStrength.value = prefsPasswordSavedOldStr
+    }
+    if (prefsSavedTheme != null) {
+        curSelectedTheme = prefsSavedTheme
     }
 
     AppTheme(
@@ -157,8 +179,6 @@ fun App(
     }
 }
 
-
-//Adds scroll view to compos
 @Composable
 fun MainViewImplementation() {
     Scaffold(topBar = { TopAppBarMain() }) {
@@ -193,7 +213,7 @@ fun MainViewImplementation() {
 @Composable
 fun TopAppBarMain() {
     TopAppBar(
-        title = { Text("Random Password Generator - KMM") },
+        title = { Text(Constants.APP_APPLICATION_NAME) },
         colors = TopAppBarDefaults.topAppBarColors(
             titleContentColor = MaterialTheme.colorScheme.onSurface,
             containerColor = MaterialTheme.colorScheme.surface
@@ -203,8 +223,7 @@ fun TopAppBarMain() {
 
 @Composable
 fun CardViewMain() {
-    Column(
-    ) {
+    Column {
         Spacer(modifier = Modifier.padding(top = 6.dp))
         Card(
             modifier = Modifier.padding(10.dp).fillMaxWidth().wrapContentHeight()
@@ -222,7 +241,7 @@ fun CardViewMain() {
                 RowComponentImageButtons()
                 Divider(thickness = 0.5.dp)
                 RowComponentPasswordLabel(passwordTextVal.value)
-                RowComponentPasswordStrength(mPasswordStrength.value)
+                RowComponentPasswordStrength()
                 RowComponentButtons()
                 Divider(thickness = 0.5.dp)
                 RowComponentInCardSlider(Constants.PASSWORD_LENGTH)
@@ -269,6 +288,17 @@ fun ImageButtonTheme(visibility: Boolean) {
             onClick = {
                 isDarkTheme.value = !thumbThemeSelected.value
                 thumbThemeSelected.value = !thumbThemeSelected.value
+
+                if (isDarkTheme.value)
+                    settingsPrefs.updateKeyValueToDataStoreString(
+                        Constants.SELECTED_THEME,
+                        Constants.SELECTED_THEME_NIGHT
+                    )
+                else
+                    settingsPrefs.updateKeyValueToDataStoreString(
+                        Constants.SELECTED_THEME,
+                        Constants.SELECTED_THEME_LIGHT
+                    )
             }
         ) {
             Image(
@@ -301,7 +331,7 @@ fun ImageButtonAbout() {
 @Composable
 fun TextHeader() {
     Text(
-        text = "Random Password Generator",
+        text = Constants.APP_TITLE_NAME,
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(1.dp).fillMaxWidth(),
         style = MaterialTheme.typography.headlineSmall
@@ -315,16 +345,16 @@ fun AlertDialogAbout() {
             onDismissRequest = {
                 shouldShowDialogAbout.value = false
             },
-            title = { Text(text = "About App") },
-            text = { Text(text = "© 2025. Developed by Bharath Vishal. Open Source Software licensed with Apache 2.0 license. ") },
-            confirmButton = { // 6
+            title = { Text(text = Constants.APP_ABOUT) },
+            text = { Text(text = Constants.APP_CREDITS) },
+            confirmButton = {
                 Button(
                     onClick = {
                         shouldShowDialogAbout.value = false
                     }
                 ) {
                     Text(
-                        text = "Close",
+                        text = Constants.APP_CLOSE,
                     )
                 }
             }
@@ -367,7 +397,7 @@ fun RowComponentInCardSlider(strDesc: String) {
         )
 
         Slider(
-            value = sliderPosition.toFloat(), onValueChange = {
+            value = sliderPosition, onValueChange = {
                 try {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 } catch (e: Exception) {
@@ -446,7 +476,7 @@ fun RowComponentButtons() {
     var clipboardManager: ClipboardManager? = null
     val curPlatforn = getPlatform().name
 
-    if (curPlatforn != "Web with Kotlin/Wasm") {
+    if (curPlatforn != Constants.PLATFORM_WEB) {
         clipboardManager = LocalClipboardManager.current
     }
 
@@ -464,22 +494,22 @@ fun RowComponentButtons() {
             ),
         ) {
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = "Generate Password")
+            Text(text = Constants.GENERATE_PASSWORD)
         }
 
         OutlinedButton(
             modifier = Modifier.weight(1F),
             onClick = {
                 copyToClipboard.value = true
-                showSnackBarCoroutine("Copied password to Clipboard.")
+                showSnackBarCoroutine(Constants.COPIED_PASSWORD_TO_CLIPBOARD)
             },
             contentPadding = PaddingValues(
                 start = 20.dp, top = 12.dp, end = 20.dp, bottom = 12.dp
             ),
         ) {
             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
-            Text(text = "Copy Password")
-            if (curPlatforn != "Web with Kotlin/Wasm") {
+            Text(text = Constants.COPY_PASSWORD)
+            if (curPlatforn != Constants.PLATFORM_WEB) {
                 clipboardManager!!.setText(AnnotatedString(passwordTextVal.value))
             }
         }
@@ -505,9 +535,9 @@ fun RowComponentPasswordLabel(strPass: String) {
 }
 
 @Composable
-fun RowComponentPasswordStrength(str: String) {
+fun RowComponentPasswordStrength() {
     val passStr = Utilities.calculateStrengthOfPassword(passwordTextVal.value)
-    val inpText = "Password Strength : $passStr"
+    val inpText = "${Constants.PASSWORD_STRENGTH} : $passStr"
     val strStrIndex = passStr.length
     val startIndex = inpText.length - strStrIndex
     val endIndex = inpText.length
@@ -548,57 +578,45 @@ fun RowComponentImageButtons() {
 
 
 fun initValues() {
-    for (i in 0..25)
-        capital_letters_array[i] = (i + 65).toChar().toString()
+    try {
+        for (i in 0..25)
+            capital_letters_array[i] = (i + 65).toChar().toString()
 
-    for (i in 0..25)
-        small_letters_array[i] = (i + 97).toChar().toString()
+        for (i in 0..25)
+            small_letters_array[i] = (i + 97).toChar().toString()
 
-    for (i in 0..9)
-        numbers_array[i] = i.toString()
+        for (i in 0..9)
+            numbers_array[i] = i.toString()
 
-    symbols_array = arrayOf(
-        "#",
-        "&",
-        "/",
-        "-",
-        "+",
-        "%",
-        "$",
-        "<",
-        ">",
-        "(",
-        ")",
-        "{",
-        "}",
-        "[",
-        "]"
-    )
+        symbols_array = Constants.SYMBOLS_LIST
+
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
 
-//handle generate button click
 fun generateRandomPassword() {
     try {
         if (!mCheckedStateCapitalLetters.value && !mCheckedStateSmallLetters.value && !mCheckedStateSymbol.value && !mCheckedStateNumbers.value) {
             //No choices selected
             showSnackBarCoroutine(
-                "Select at least one constraint to generate a stronger password.",
+                Constants.SELECT_ATLEAST_ONE_CONSTRAINT_TO_GENERATE_STRONGER_PASSWORD,
             )
             return
         }
         if (passwordLengthVal.value < 1) {
-            showSnackBarCoroutine("Length should not be empty")
+            showSnackBarCoroutine(Constants.LENGTH_SHOULD_NOT_BE_EMPTY)
             return
         }
-        val current_val = passwordLengthVal.value
-        if (current_val < MIN_LENGTH) {
+        val currentVal = passwordLengthVal.value
+        if (currentVal < Constants.MIN_LENGTH) {
             showSnackBarCoroutine(
-                "Password should be atleast $MIN_LENGTH characters in length"
+                Constants.PASSWORD_MIN_LENGTH_CONSTRAINT
             )
             return
-        } else if (current_val > MAX_LENGTH) {
+        } else if (currentVal > Constants.MAX_LENGTH) {
             showSnackBarCoroutine(
-                "Maximum value possible is $MAX_LENGTH",
+                Constants.PASSWORD_MAX_LENGTH_CONSTRAINT
             )
             return
         }
@@ -634,9 +652,9 @@ fun generateRandomPassword() {
             newPassword.append(elements[randomChoice][randomCharIndex])
         }
         passwordTextVal.value = newPassword.toString()
-        showSnackBarCoroutine("Random password generated.")
+        showSnackBarCoroutine(Constants.RANDOM_PASSWORD_GENERATED)
         val tempText = Utilities.calculateStrengthOfPassword(newPassword.toString())
-        mPasswordStrength.value = "Password Strength : $tempText"
+        mPasswordStrength.value = "${Constants.PASSWORD_STRENGTH} : $tempText"
 
         settingsPrefs.updateKeyValueToDataStoreString(
             Constants.prefsPasswordSavedOld,
@@ -658,14 +676,13 @@ fun generateRandomPassword() {
 
 fun showSnackBarCoroutine(strVal: String) {
     CoroutineScope(Dispatchers.Default).launch {
-        // Simulate snackbarshow data
         showSnackBarVal.value = true
         snackBarMessageVal.value = strVal
         delay(2500)
         // Update data on the main thread
         withContext(Dispatchers.Main) {
             showSnackBarVal.value = false
-            snackBarMessageVal.value = "-"
+            snackBarMessageVal.value = Constants.SNACKBARMESSAGE_VAL_EMPTY
         }
     }
 }

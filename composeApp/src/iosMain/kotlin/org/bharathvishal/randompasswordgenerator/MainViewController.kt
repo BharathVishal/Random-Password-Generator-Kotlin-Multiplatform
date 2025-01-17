@@ -1,7 +1,6 @@
 package org.bharathvishal.randompasswordgenerator
 
 import androidx.compose.ui.window.ComposeUIViewController
-import kotlinx.cinterop.ExperimentalForeignApi
 import platform.UIKit.UIScreen
 import platform.UIKit.UIUserInterfaceStyle
 
