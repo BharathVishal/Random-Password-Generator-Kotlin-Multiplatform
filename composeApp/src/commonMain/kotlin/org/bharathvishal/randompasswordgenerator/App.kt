@@ -25,6 +25,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +58,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -74,8 +77,12 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bharathvishal.biometricauthentication.theme.AppTheme
@@ -232,7 +239,7 @@ fun CardViewMain() {
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp).fillMaxWidth().wrapContentHeight(),
+                modifier = Modifier.padding(10.dp).fillMaxWidth().wrapContentHeight(),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -271,7 +278,7 @@ fun ImageLogo() {
     Image(
         painter = painterResource(Res.drawable.baseline_password_24),
         contentDescription = "Image Logo",
-        modifier = Modifier.requiredHeight(125.dp).requiredWidth(125.dp).padding(5.dp)
+        modifier = Modifier.requiredHeight(100.dp).requiredWidth(100.dp).padding(1.dp)
     )
 }
 
@@ -341,12 +348,40 @@ fun TextHeader() {
 @Composable
 fun AlertDialogAbout() {
     if (shouldShowDialogAbout.value) {
+        val annotatedText = Constants.annotatedStringCredits
+        val localUriHandler = LocalUriHandler.current
         AlertDialog(
             onDismissRequest = {
                 shouldShowDialogAbout.value = false
             },
-            title = { Text(text = Constants.APP_ABOUT) },
-            text = { Text(text = Constants.APP_CREDITS) },
+            title = {
+                Text(
+                    text = Constants.APP_ABOUT_MAIN, style = MaterialTheme.typography.labelMedium,
+                    fontSize = 25.sp,
+                    lineHeight = 25.sp
+                )
+            },
+            text = {
+                Text(
+                    modifier = Modifier.clickable {
+                        val annotation = annotatedText.getStringAnnotations(
+                            tag = Constants.LICENSE_TAG,
+                            start = 0,
+                            end = annotatedText.length - 1
+                        ).firstOrNull()
+
+                        if (annotation != null) {
+                            localUriHandler.openUri(Constants.APACHE_LICENSE_LINK)
+                        }
+                    },
+                    text = Constants.annotatedStringCredits,
+                    style = TextStyle.Default,
+                    fontSize = 19.sp,
+                    lineHeight = 19.sp,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 5
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
@@ -379,11 +414,13 @@ fun SnackBarViewComposable(visibilityState: Boolean, message: String) {
 
 
 //Row component composable function for Biometric related info
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RowComponentInCardSlider(strDesc: String) {
     var sliderPosition by remember { mutableFloatStateOf(5f) }
     val haptic = LocalHapticFeedback.current
     sliderPosition = passwordLengthVal.value.toFloat()
+    val interactionSource = remember { MutableInteractionSource() }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
@@ -397,7 +434,8 @@ fun RowComponentInCardSlider(strDesc: String) {
         )
 
         Slider(
-            value = sliderPosition, onValueChange = {
+            value = sliderPosition,
+            onValueChange = {
                 try {
                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 } catch (e: Exception) {
@@ -407,7 +445,14 @@ fun RowComponentInCardSlider(strDesc: String) {
                 sliderPosition = it.toInt().toFloat()
                 passwordLengthVal.value = it.toInt()
                 generateRandomPassword()
-            }, steps = 30, valueRange = 5f..30f
+            },
+            steps = 30, valueRange = 5f..30f,
+            thumb = {
+                SliderDefaults.Thumb(
+                    interactionSource = interactionSource,
+                    thumbSize = DpSize(25.dp, 25.dp)
+                )
+            },
         )
         Text(text = sliderPosition.toInt().toString())
     }

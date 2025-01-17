@@ -18,7 +18,11 @@
 
 package org.bharathvishal.randompasswordgenerator.Constants
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 
 
 object Constants {
@@ -45,9 +49,9 @@ object Constants {
     const val prefsPasswordSavedOldStr = "OldPasswordStr"
     const val prefsSavedTheme = "prefsSavedTheme"
 
-    const val SELECTED_THEME="SELECTED_THEME"
-    const val SELECTED_THEME_NIGHT="NIGHT_MODE"
-    const val SELECTED_THEME_LIGHT="LIGHT_MODE"
+    const val SELECTED_THEME = "SELECTED_THEME"
+    const val SELECTED_THEME_NIGHT = "NIGHT_MODE"
+    const val SELECTED_THEME_LIGHT = "LIGHT_MODE"
 
     const val PLATFORM_WEB = "Web with Kotlin/Wasm"
     const val APP_CLOSE = "Close"
@@ -90,5 +94,24 @@ object Constants {
         "Password should be atleast $MIN_LENGTH characters in length"
     const val PASSWORD_MAX_LENGTH_CONSTRAINT =
         "Password should be atleast $MIN_LENGTH characters in length"
+
+    const val APACHE_LICENSE_LINK = "https://github.com/apache/.github/blob/main/LICENSE"
+    const val GROUP_TAG = "groupName"
+    const val LICENSE_TAG = "license"
+
+    const val APP_ABOUT_MAIN = "© 2025. Developed by Bharath Vishal. "
+    val annotatedStringCredits = buildAnnotatedString {
+        append("Open Source Software licensed with ")
+
+        pushStringAnnotation(
+            tag = LICENSE_TAG,
+            annotation = APACHE_LICENSE_LINK
+        )
+        withStyle(style = SpanStyle(color = Color.Blue)) {
+            append("Apache 2.0 license")
+        }
+        pop()
+        append(".")
+    }
 }
 
