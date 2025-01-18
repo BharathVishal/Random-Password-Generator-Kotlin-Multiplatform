@@ -46,8 +46,9 @@ Check out the repository, navigate to the project folder, and use the following 
 
 &nbsp;
 ### Preview : 
-![Preview](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/blob/main/Gif_Preview/Preview1.gif)
+![Preview](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/blob/main/Gif_Preview/Preview_1.gif)
 &nbsp;
+
 ![Preview](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/blob/main/Gif_Preview/Preview2.gif)
 
 &nbsp;
