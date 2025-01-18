@@ -1,0 +1,11 @@
+abi_version=1.201.0
+builtins_platform=WASM
+compiler_version=2.1.0
+depends=components.resources\:library components.ui-tooling-preview\:library org.jetbrains.androidx.lifecycle\:lifecycle-viewmodel org.kotlincrypto\:secure-random com.russhwolf\:multiplatform-settings-no-arg com.russhwolf\:multiplatform-settings org.jetbrains.compose.material\:material org.jetbrains.compose.material3\:material3 org.jetbrains.compose.material\:material-ripple org.jetbrains.compose.foundation\:foundation org.jetbrains.compose.animation\:animation org.jetbrains.compose.material\:material-icons-core org.jetbrains.compose.foundation\:foundation-layout org.jetbrains.compose.ui\:ui org.jetbrains.kotlinx\:kotlinx-browser org.jetbrains.androidx.lifecycle\:lifecycle-runtime-compose org.jetbrains.androidx.lifecycle\:lifecycle-runtime org.jetbrains.androidx.lifecycle\:lifecycle-common org.jetbrains.compose.annotation-internal\:annotation org.jetbrains.compose.animation\:animation-core org.jetbrains.kotlinx\:kotlinx-coroutines-core org.jetbrains.kotlinx\:atomicfu org.jetbrains.compose.runtime\:runtime-saveable kotlin org.jetbrains.compose.runtime\:runtime org.jetbrains.compose.ui\:ui-text org.jetbrains.compose.ui\:ui-graphics org.jetbrains.compose.ui\:ui-unit org.jetbrains.skiko\:skiko org.jetbrains.compose.ui\:ui-geometry org.jetbrains.compose.ui\:ui-util
+ir_signature_versions=1,2
+jsOutputName=composeApp
+metadata_version=1.4.1
+serializedIrFileFingerprints=3qb7x1n18lcg9.dt09l3tla067 2e4rtd0aldgpv.2flwzyjjxov8q 7comoz3hclek.2rno40lfqtn77 2hdj81dbkg215.dqc455lq51g9 1sbfm6914am06.2c5r44g8qbyge 2ozhi4gacc7fo.3pa0qvg9mk5jf 1e1xrid4v0jvp.2lo3km9o9rjaf 2oxxkoh2wb7al.1941rnshatnlb 3jgikfyust5sh.1e4ot2z5t30sz 3plmyj472ve5a.3ccdtuhzpucxv v40yz3ufj15t.nm92utt53gli 3276xpvpifadu.2eyltil8jwbeg hzs8qnpmw5tg.3jebgxpst7z29 96qp119vty97.38astj0l5xb11 1z3xb1m5zizvr.1mfvrpj5onrzo 3btfebkwgnx1m.15p5m3ie7qfwb 1d7gbq63x4tbg.fwui3h6hpjt5
+serializedKlibFingerprint=2naz65figrpge.3ajvqzedk1wqk
+unique_name=RandomPasswordGenerator\:composeApp
+wasm_targets=wasm-js
