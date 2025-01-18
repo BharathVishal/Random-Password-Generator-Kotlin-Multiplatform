@@ -70,12 +70,13 @@ Check out the repository, navigate to the project folder, and use the following 
 
 ### SDK Info : 
 Min SDK : 24  | Target SDK : 35 | Gradle : 8.9.0  | Kotlin | Jetpack Compose
-
+Kotlin Multiplatform Plugin: 0.8.3
+JVM : 17
 &nbsp;
 
 
 ### Android Studio Version : 
-Android Studio Ladybug | 2024.2.1 Patch 3
+Android Studio Ladybug Feature Drop | 2024.2.2
 
 
 &nbsp;
