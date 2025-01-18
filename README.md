@@ -13,15 +13,16 @@ Other folders are for Kotlin code that will be compiled for only the platform in
 1. Open project and sync gradle.
 2. Modify the code to suit your needs.
 3. Watch out for more features.
+&nbsp;
 
 #### Build and run
 Check out the repository, navigate to the project folder, and use the following commands:
-
+&nbsp;
 ##### Run Web version via Gradle Run Configurations
-wasmJsBrowserRun -t --quiet
-
+```wasmJsBrowserRun -t --quiet```
+&nbsp;
 ##### Run Desktop version via Gradle
-composeApp:desktopRun
+```composeApp:desktopRun```
 
 &nbsp;
 ### Features :
