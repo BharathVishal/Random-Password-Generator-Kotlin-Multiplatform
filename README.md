@@ -17,17 +17,20 @@ Other folders are for Kotlin code that will be compiled for only the platform in
 3. Watch out for more features.
 &nbsp;
 &nbsp;
+
 #### Build and run
 Check out the repository, navigate to the project folder, and use the following commands:
 &nbsp;
+
 ##### Run Web version via Gradle Run Configurations
 ```wasmJsBrowserRun -t --quiet```
 &nbsp;
+
 ##### Run Desktop version via Gradle
 ```composeApp:desktopRun```
 &nbsp;
-&nbsp;
 
+&nbsp;
 ### Features :
 - 
 - Material design 3.0 with dynamic theming.
