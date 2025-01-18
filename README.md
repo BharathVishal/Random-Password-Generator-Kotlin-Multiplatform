@@ -85,7 +85,7 @@ Android Studio Ladybug Feature Drop | 2024.2.2
 &nbsp;
 
 #### License : 
-[Apache License 2.0](https://github.com/BharathVishal/Coroutine-As-AsyncTask/blob/main/LICENSE)
+[Apache License 2.0](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform?tab=Apache-2.0-1-ov-file#readme)
 &nbsp;
 
 &nbsp;
