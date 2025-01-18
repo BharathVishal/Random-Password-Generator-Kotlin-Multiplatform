@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "org.bharathvishal.randompasswordgenerator.composeApp-mergeDebugResources-58:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+            "map": [
+                {
+                    "source": "/Users/bharathvishal/.gradle/caches/8.10.2/transforms/ae6482abd8eedd8968b955d3b7f26f9e/transformed/material-1.12.0/res/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "63",
+                        "endOffsets": "114"
+                    }
+                }
+            ]
+        }
+    ]
+}
