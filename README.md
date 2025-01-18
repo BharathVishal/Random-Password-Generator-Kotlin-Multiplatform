@@ -74,7 +74,7 @@ Min SDK : 24  | Target SDK : 35 | Gradle : 8.9.0  | Kotlin | Jetpack Compose | K
 &nbsp;
 
 
-
+&nbsp;
 ### Android Studio Version : 
 Android Studio Ladybug Feature Drop | 2024.2.2
 
