@@ -16,14 +16,14 @@
  *
  **/
 
-package org.bharathvishal.randompasswordgenerator.Utilities
+package org.bharathvishal.randompasswordgenerator.utilities
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import org.bharathvishal.randompasswordgenerator.Constants.Constants
+import org.bharathvishal.randompasswordgenerator.constants.Constants
 
 object Utilities {
     fun calculateStrengthOfPassword(password: String): String {

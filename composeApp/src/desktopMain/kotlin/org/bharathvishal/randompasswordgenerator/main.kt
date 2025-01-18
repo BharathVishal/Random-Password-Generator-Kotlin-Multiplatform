@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.WindowState
 import androidx.compose.ui.window.application
-import org.bharathvishal.randompasswordgenerator.Constants.Constants.APP_APPLICATION_NAME
+import org.bharathvishal.randompasswordgenerator.constants.Constants.APP_APPLICATION_NAME
 
 fun main() = application {
     Window(

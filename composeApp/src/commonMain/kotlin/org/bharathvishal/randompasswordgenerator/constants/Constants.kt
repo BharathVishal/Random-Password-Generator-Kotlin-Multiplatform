@@ -16,7 +16,7 @@
  *
  **/
 
-package org.bharathvishal.randompasswordgenerator.Constants
+package org.bharathvishal.randompasswordgenerator.constants
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
@@ -51,11 +51,14 @@ object Constants {
     const val SELECTED_THEME_NIGHT = "NIGHT_MODE"
     const val SELECTED_THEME_LIGHT = "LIGHT_MODE"
 
+    const val ANIMATION_SETTING = "ANIMATION_SETTING"
+
     const val PLATFORM_WEB = "Web with Kotlin/Wasm"
     const val APP_CLOSE = "Close"
     const val APP_APPLICATION_NAME = "Random Password Generator - KMM"
     const val APP_TITLE_NAME = "Random Password Generator"
     const val APP_ABOUT = "About App"
+    const val APP_HELP = "Help"
     const val APP_CREDITS =
         "© 2025. Developed by Bharath Vishal. Open Source Software licensed with Apache 2.0 license."
 
@@ -69,6 +72,9 @@ object Constants {
     const val COPIED_PASSWORD_TO_CLIPBOARD = "Copied password to Clipboard."
     const val COPY_PASSWORD = "Copy Password"
     const val PASSWORD_STRENGTH = "Password Strength"
+
+    const val PASSWORD_GENERATION_ANIMATION_ON="Enabled password generation animation."
+    const val PASSWORD_GENERATION_ANIMATION_OFF="Disabled password generation animation."
 
     val SYMBOLS_LIST = arrayOf(
         "#",
@@ -102,6 +108,10 @@ object Constants {
 
     const val GENERATED_RANDOM_PASSWORDS = "Generated Random Passwords"
     const val APP_ABOUT_MAIN = "© 2025. Developed by Bharath Vishal. "
+
+    const val APP_HELP_1 = "Generate strong random passwords with this application. Generate passwords with multiple available options."
+    const val APP_HELP_2 = "Adjusting the password length slider automatically generates new passwords. Features automatic dark mode switching and Material Dynamic theming on Android."
+
     val annotatedStringCredits = buildAnnotatedString {
         append("Open Source Software licensed with ")
 

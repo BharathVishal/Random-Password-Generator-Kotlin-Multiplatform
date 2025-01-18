@@ -96,15 +96,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.bharathvishal.randompasswordgenerator.Constants.Constants
-import org.bharathvishal.randompasswordgenerator.Utilities.SharedPrefsUtil
-import org.bharathvishal.randompasswordgenerator.Utilities.Utilities
+import org.bharathvishal.randompasswordgenerator.constants.Constants
+import org.bharathvishal.randompasswordgenerator.utilities.SharedPrefsUtil
+import org.bharathvishal.randompasswordgenerator.utilities.Utilities
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import randompasswordgenerator.composeapp.generated.resources.Res
+import randompasswordgenerator.composeapp.generated.resources.animation_off
+import randompasswordgenerator.composeapp.generated.resources.animation_on
 import randompasswordgenerator.composeapp.generated.resources.baseline_password_24
 import randompasswordgenerator.composeapp.generated.resources.dark_mode_24dp
+import randompasswordgenerator.composeapp.generated.resources.help_24dp
 import randompasswordgenerator.composeapp.generated.resources.info_24dp
 import randompasswordgenerator.composeapp.generated.resources.light_mode_24dp
 
@@ -120,9 +123,11 @@ private val copyToClipboard = mutableStateOf(false)
 val mPasswordStrength = mutableStateOf("Weak")
 var anotatedStringPasswordStrength: AnnotatedString? = null
 var thumbThemeSelected = mutableStateOf(false)
+var thumbAnimationSettingSelected = mutableStateOf(false)
 var isDarkTheme = mutableStateOf(false)
 var isThemeIconVisible = mutableStateOf(false)
 var shouldShowDialogAbout = mutableStateOf(false)
+var shouldShowDialogHelp = mutableStateOf(false)
 var shouldShowDialogRandomPasswords = mutableStateOf(false)
 
 private val capital_letters_array = arrayOfNulls<String>(26)
@@ -139,7 +144,7 @@ private val randomPasswords = mutableListOf<String>()
 fun App(
     darkTheme: Boolean, dynamicColor: Boolean
 ) {
-    settingsPrefs.InitSharedPrefs()
+    settingsPrefs.initSharedPrefs()
     randomPasswords.clear()
     println("App Initialised with Settings Pref.")
 
@@ -159,6 +164,8 @@ fun App(
         settingsPrefs.getKeyValueFromPreferencesString(Constants.prefsPasswordSavedOldStr)
     val prefsSavedTheme =
         settingsPrefs.getKeyValueFromPreferencesString(Constants.SELECTED_THEME)
+    val prefsAnimationSettingSelected =
+        settingsPrefs.getKeyValueFromPreferencesBoolean(Constants.ANIMATION_SETTING)
 
     mCheckedStateCapitalLetters.value = prefsIncludeCapLetters.toString().toBoolean()
     mCheckedStateSmallLetters.value = prefsIncludeSmallLetters.toString().toBoolean()
@@ -176,6 +183,7 @@ fun App(
     if (prefsSavedTheme != null) {
         curSelectedTheme = prefsSavedTheme
     }
+    thumbAnimationSettingSelected.value = prefsAnimationSettingSelected.toString().toBoolean()
 
     AppTheme(
         darkTheme = (if (isSystemInDarkTheme()) {
@@ -224,6 +232,10 @@ fun MainViewImplementation() {
                     }
                     if (shouldShowDialogAbout.value) {
                         AlertDialogAbout()
+                    }
+
+                    if (shouldShowDialogHelp.value) {
+                        AlertDialogHelp()
                     }
 
                     if (shouldShowDialogRandomPasswords.value) {
@@ -347,6 +359,42 @@ fun ImageButtonTheme(visibility: Boolean) {
 
 
 @Composable
+fun ImageButtonAnimationSetting() {
+    val res: DrawableResource = if (thumbAnimationSettingSelected.value) {
+        Res.drawable.animation_on
+    } else {
+        Res.drawable.animation_off
+    }
+
+    IconButton(
+        onClick = {
+            thumbAnimationSettingSelected.value = !thumbAnimationSettingSelected.value
+
+            if (thumbAnimationSettingSelected.value) {
+                settingsPrefs.updateKeyValueToDataStoreBoolean(
+                    Constants.ANIMATION_SETTING,
+                    true
+                )
+                showSnackBarCoroutine(Constants.PASSWORD_GENERATION_ANIMATION_ON)
+            } else {
+                settingsPrefs.updateKeyValueToDataStoreBoolean(
+                    Constants.ANIMATION_SETTING,
+                    false
+                )
+                showSnackBarCoroutine(Constants.PASSWORD_GENERATION_ANIMATION_OFF)
+            }
+        }
+    ) {
+        Image(
+            painter = painterResource(res),
+            contentDescription = "Animation switch",
+            modifier = Modifier.requiredHeight(35.dp).requiredWidth(35.dp).padding(1.dp)
+        )
+    }
+}
+
+
+@Composable
 fun ImageButtonAbout() {
     IconButton(
         onClick = {
@@ -356,6 +404,22 @@ fun ImageButtonAbout() {
         Image(
             painter = painterResource(Res.drawable.info_24dp),
             contentDescription = "About switch",
+            modifier = Modifier.requiredHeight(35.dp).requiredWidth(35.dp).padding(1.dp)
+        )
+    }
+}
+
+
+@Composable
+fun ImageButtonHelp() {
+    IconButton(
+        onClick = {
+            shouldShowDialogHelp.value = true
+        }
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.help_24dp),
+            contentDescription = "Help",
             modifier = Modifier.requiredHeight(35.dp).requiredWidth(35.dp).padding(1.dp)
         )
     }
@@ -424,6 +488,54 @@ fun AlertDialogAbout() {
                 Button(
                     onClick = {
                         shouldShowDialogAbout.value = false
+                    }
+                ) {
+                    Text(
+                        text = Constants.APP_CLOSE,
+                    )
+                }
+            }
+        )
+    }
+}
+
+
+@Composable
+fun AlertDialogHelp() {
+    if (shouldShowDialogHelp.value) {
+        AlertDialog(
+            onDismissRequest = {
+                shouldShowDialogHelp.value = false
+            },
+            title = {
+                Text(
+                    text = Constants.APP_HELP,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontSize = 24.sp,
+                    lineHeight = 24.sp
+                )
+            },
+            text = {
+                Column {
+                    Text(
+                        text = Constants.APP_HELP_1,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontSize = 19.sp,
+                        lineHeight = 19.sp
+                    )
+                    Spacer(modifier = Modifier.padding(top = 9.dp))
+                    Text(
+                        text = Constants.APP_HELP_2,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontSize = 19.sp,
+                        lineHeight = 19.sp
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        shouldShowDialogHelp.value = false
                     }
                 ) {
                     Text(
@@ -667,7 +779,9 @@ fun RowComponentImageButtons() {
         horizontalArrangement = Arrangement.Center
     ) {
         ImageButtonTheme(isThemeIconVisible.value)
+        ImageButtonAnimationSetting()
         ImageButtonAbout()
+        ImageButtonHelp()
     }
 }
 
@@ -836,8 +950,8 @@ fun generateHundredRandomPasswords() {
                 }
 
                 //For animated effect
-                //Remove it later to speed up
-                delay(4)
+                if (thumbAnimationSettingSelected.value)
+                    delay(5)
 
                 passwordTextVal.value = newPassword.toString()
                 val tempText = Utilities.calculateStrengthOfPassword(newPassword.toString())

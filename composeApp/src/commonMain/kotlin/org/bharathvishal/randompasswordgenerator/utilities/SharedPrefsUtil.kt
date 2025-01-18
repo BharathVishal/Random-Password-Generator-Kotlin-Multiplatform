@@ -16,7 +16,7 @@
  *
  **/
 
-package org.bharathvishal.randompasswordgenerator.Utilities
+package org.bharathvishal.randompasswordgenerator.utilities
 
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
@@ -24,7 +24,7 @@ import com.russhwolf.settings.set
 class SharedPrefsUtil {
     private var settingsPref: Settings? = null
 
-    fun InitSharedPrefs() {
+    fun initSharedPrefs() {
         settingsPref = Settings()
     }
 
