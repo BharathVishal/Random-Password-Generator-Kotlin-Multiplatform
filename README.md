@@ -32,9 +32,15 @@ Check out the repository, navigate to the project folder, and use the following 
 
 &nbsp;
 ### Features :
-- 
-- Material design 3.0 with dynamic theming.
-- Uses Jetpack Compose.
+- Generate passwords with various options (capital letters, smallcase, numbers, symbols).
+- Has automatic and manual night mode theme switching.
+- Has an option to generate 100 random passwords.
+- Copy generated password to clipboard.
+- Has a clean and intuitive UI.
+- Handles orientation changes (Portrait and landscape).
+- Persists app settings on app restarts on all platforms.
+- Supports edge to edge functionality on Android 15.
+- Uses Jetpack Compose and Material design 3.0 dynamic theme based UI. 
 
 
 &nbsp;
@@ -44,9 +50,10 @@ Check out the repository, navigate to the project folder, and use the following 
 
 &nbsp;
 ### Screenshots : 
-![Screenshot 1](https://github.com/BharathVishal/Coroutine-As-AsyncTask/blob/main/Screenshots/1.png?s=15)
-![Screenshot 2](https://github.com/BharathVishal/Coroutine-As-AsyncTask/blob/main/Screenshots/2.png?s=15)
-
+![Screenshot 1](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Android.png)
+![Screenshot 2](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_iOS.png)
+![Screenshot 3](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Desktop.png)
+![Screenshot 4](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Web.png)
 
 
 &nbsp;
