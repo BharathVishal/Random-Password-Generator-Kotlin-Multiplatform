@@ -1,5 +1,5 @@
 # Random Password Generator - Kotlin Multiplatform
- An implementation of random password generator. Uses shared Jetpack Compose UI and Kotlin Multiplatform. Runs on Android, iOS, Web Browsers and Desktop. Generate strong random passwords with multiple available options.
+ An implementation of random password generator. Generate strong random passwords with multiple available options. Uses shared Jetpack Compose UI and Kotlin Multiplatform. Runs on Android, iOS, Web Browsers and Desktop.
 
 &nbsp;
 ### Project Structure:
