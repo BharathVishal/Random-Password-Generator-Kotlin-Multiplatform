@@ -50,10 +50,11 @@ Check out the repository, navigate to the project folder, and use the following 
 
 &nbsp;
 ### Screenshots : 
-![Screenshot 1](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Android.png)
-![Screenshot 2](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_iOS.png)
-![Screenshot 3](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Desktop.png)
-![Screenshot 4](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Web.png)
+![Screenshot 1](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Android.png?s=15)
+![Screenshot 2](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_iOS.png?s=15)
+&nbsp;
+![Screenshot 3](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Desktop.png?s=15)
+![Screenshot 4](https://github.com/BharathVishal/Random-Password-Generator-Kotlin-Multiplatform/tree/main/Screenshots/Screenshot_Web.png?s=15)
 
 
 &nbsp;
