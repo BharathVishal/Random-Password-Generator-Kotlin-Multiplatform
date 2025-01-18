@@ -55,7 +55,7 @@ object Constants {
 
     const val PLATFORM_WEB = "Web with Kotlin/Wasm"
     const val APP_CLOSE = "Close"
-    const val APP_APPLICATION_NAME = "Random Password Generator - KMM"
+    const val APP_APPLICATION_NAME = "Random Password Generator"
     const val APP_TITLE_NAME = "Random Password Generator"
     const val APP_ABOUT = "About App"
     const val APP_HELP = "Help"
