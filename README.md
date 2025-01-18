@@ -4,8 +4,10 @@
 &nbsp;
 ### Project Structure:
 This is a Kotlin Multiplatform project targeting Android, iOS, Desktop and Web.
+
 /composeApp is for code that will be shared across your Compose Multiplatform applications. It contains several subfolders:
 commonMain is for code that’s common for all targets.
+
 Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name. 
 
 &nbsp;
@@ -14,7 +16,7 @@ Other folders are for Kotlin code that will be compiled for only the platform in
 2. Modify the code to suit your needs.
 3. Watch out for more features.
 &nbsp;
-
+&nbsp;
 #### Build and run
 Check out the repository, navigate to the project folder, and use the following commands:
 &nbsp;
@@ -23,7 +25,7 @@ Check out the repository, navigate to the project folder, and use the following 
 &nbsp;
 ##### Run Desktop version via Gradle
 ```composeApp:desktopRun```
-
+&nbsp;
 &nbsp;
 ### Features :
 - 
