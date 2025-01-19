@@ -13,3 +13,14 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea
+build
+*/build
+captures
+.externalNativeBuild
+.cxx
+xcuserdata/
+Pods/
+/androidApp/key
+*.jks
+*yarn.lock
