@@ -457,6 +457,22 @@ fun AlertDialogAbout() {
             text = {
                 Column {
                     Text(
+                        text = Constants.APP_TITLE_NAME,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontSize = 21.sp,
+                        lineHeight = 21.sp
+                    )
+                    Spacer(modifier = Modifier.padding(top = 1.dp))
+                    Text(
+                        text = Constants.APP_VERSION,
+                        style = MaterialTheme.typography.labelMedium,
+                        fontSize = 15.sp,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 15.sp
+                    )
+                    Spacer(modifier = Modifier.padding(top = 5.dp))
+                    Spacer(modifier = Modifier.padding(top = 9.dp))
+                    Text(
                         text = Constants.APP_ABOUT_MAIN,
                         style = MaterialTheme.typography.labelMedium,
                         fontSize = 19.sp,

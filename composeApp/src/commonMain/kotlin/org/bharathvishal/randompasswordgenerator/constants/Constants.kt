@@ -57,6 +57,7 @@ object Constants {
     const val APP_CLOSE = "Close"
     const val APP_APPLICATION_NAME = "Random Password Generator"
     const val APP_TITLE_NAME = "Random Password Generator"
+    const val APP_VERSION = "v1.0"
     const val APP_ABOUT = "About App"
     const val APP_HELP = "Help"
     const val APP_CREDITS =
