@@ -73,7 +73,7 @@ Check out the repository, navigate to the project folder, and use the following 
 &nbsp;
 
 ### SDK Info : 
-Min SDK : 24  | Target SDK : 36 | Gradle : 8.11.0  | Kotlin | Jetpack Compose | Kotlin Multiplatform Plugin: 0.8.3 | JVM : 17
+Min SDK : 24  | Target SDK : 36 | Gradle : 8.11.0  | Kotlin | Jetpack Compose | Kotlin Multiplatform Plugin: 0.9-251.25410-AS-69 | JVM : 17
 &nbsp;
 
 
