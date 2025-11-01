@@ -122,7 +122,7 @@ compose.desktop {
     application {
         mainClass = "org.bharathvishal.randompasswordgenerator.MainKt"
 
-        nativeDistributions {
+        nativeDistributions{
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "org.bharathvishal.randompasswordgenerator"
             packageVersion = "1.0.0"
