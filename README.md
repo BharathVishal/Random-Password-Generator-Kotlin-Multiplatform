@@ -73,13 +73,14 @@ Check out the repository, navigate to the project folder, and use the following 
 &nbsp;
 
 ### SDK Info : 
-Min SDK : 24  | Target SDK : 36 | Gradle : 8.11.0  | Kotlin | Jetpack Compose | Kotlin Multiplatform Plugin: 0.9-251.25410-AS-69 | JVM : 17
+Min SDK : 24  | Target SDK : 36 | Gradle : 8.13.0  | Kotlin | Jetpack Compose | Kotlin Multiplatform Plugin: 0.9-252.25557-AS-21 | JVM : 17
 &nbsp;
 
 
 &nbsp;
 ### Android Studio Version : 
-Android Studio Narwhal | 2025.1.1
+Android Studio Otter | 2025.2.1
+
 
 
 &nbsp;
