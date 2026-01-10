@@ -73,13 +73,13 @@ Check out the repository, navigate to the project folder, and use the following 
 &nbsp;
 
 ### SDK Info : 
-Min SDK : 24  | Target SDK : 36 | Gradle : 8.13.0  | Kotlin | Jetpack Compose | Kotlin Multiplatform Plugin: 0.9-252.25557-AS-21 | JVM : 17
+Min SDK : 24  | Target SDK : 36 | Gradle : 8.13.2  | Kotlin | Jetpack Compose | Kotlin Multiplatform Plugin: 0.9-252.27397-AS-24 | JVM : 17
 &nbsp;
 
 
 &nbsp;
 ### Android Studio Version : 
-Android Studio Otter | 2025.2.1
+Android Studio Otter 2 Feature Drop | 2025.2.2 Patch 1
 
 
 
@@ -97,7 +97,7 @@ Android is a trademark of Google LLC.
 &nbsp;
 
 
-© 2025. Developed by Bharath Vishal G (https://github.com/BharathVishal).
+© 2025 - 2026. Developed by Bharath Vishal G (https://github.com/BharathVishal).
 
 Thank you. :slightly_smiling_face:
  
